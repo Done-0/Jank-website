@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  
+  pre {
+    white-space: pre;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
+    max-height: 400px;
+  }
+  
+  pre code {
+    white-space: pre;
+    display: block;
+    padding: 0;
+    background-color: transparent;
+    border-radius: 0;
+    width: 100%;
+    overflow-x: auto;
+  }
+  
+  pre::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  pre::-webkit-scrollbar-thumb {
+    background-color: rgba(156, 163, 175, 0.5);
+    border-radius: 4px;
+  }
+  
+  pre::-webkit-scrollbar-track {
+    background-color: rgba(229, 231, 235, 0.2);
+    border-radius: 4px;
+  }
+  
+  .dark pre::-webkit-scrollbar-thumb {
+    background-color: rgba(75, 85, 99, 0.5);
+  }
+  
+  .dark pre::-webkit-scrollbar-track {
+    background-color: rgba(31, 41, 55, 0.2);
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p style="text-align: center;">
+  <a><img src="https://p.ipic.vip/ymgq9g.PNG" alt="Jank"></a>
+</p>
+<p style="text-align: center;">
+  <em>Jank，一个轻量级的博客系统，基于 Go 语言和 Echo 框架开发，强调极简、低耦合和高扩展</em>
+</p>
+<p style="text-align: center;">
+  <a href="https://img.shields.io/github/stars/Done-0/Jank?style=social" target="_blank">
+    <img src="https://img.shields.io/github/stars/Done-0/Jank?style=social" alt="Stars">
+  </a> &nbsp;
+  <a href="https://img.shields.io/github/forks/Done-0/Jank?style=social" target="_blank">
+    <img src="https://img.shields.io/github/forks/Done-0/Jank?style=social" alt="Forks">
+  </a> &nbsp;
+  <a href="https://img.shields.io/github/contributors/Done-0/Jank" target="_blank">
+    <img src="https://img.shields.io/github/contributors/Done-0/Jank" alt="Contributors">
+  </a> &nbsp;
+  <a href="https://img.shields.io/github/issues/Done-0/Jank" target="_blank">
+    <img src="https://img.shields.io/github/issues/Done-0/Jank" alt="Issues">
+  </a> &nbsp;
+  <a href="https://img.shields.io/github/issues-pr/Done-0/Jank" target="_blank">
+    <img src="https://img.shields.io/github/issues-pr/Done-0/Jank" alt="Pull Requests">
+  </a> &nbsp;
+  <a href="https://img.shields.io/github/license/Done-0/Jank" target="_blank">
+    <img src="https://img.shields.io/github/license/Done-0/Jank" alt="License">
+  </a>
+</p>
 
-## Getting Started
+---
 
-First, run the development server:
+Jank 是一个轻量级的博客系统，前端基于 React + Umi + TypeScript + Tailwindcss + Shadcn-ui，后端基于 Go 语言和 Echo 框架开发，设计理念强调极简、低耦合和高扩展，旨在为用户提供功能丰富、界面简洁、操作简单且安全可靠的博客体验。
+
+## 预览
+
+![home-white.png](public/images/home-white.png)
+![home-black.png](public/images/home-black.png)
+
+## 技术栈
+
+**后端**：
+
+- **Go 语言**：热门后端开发语言，适合构建高并发应用。
+- **Echo 框架**：高性能的 Web 框架，支持快速开发和灵活的路由管理。
+- **PostgreSQL**：成熟的关系型数据库管理系统，支持复杂查询和事务处理。
+- **Redis**：热门缓存解决方案，提供快速数据存取和持久化选项。
+- **JWT**：安全的用户身份验证机制，确保数据传输的完整性和安全性。
+- **Docker**：容器化部署工具，简化应用的打包和分发流程。
+- **前端**：Vue 3 + Nuxt + Shadcn-vue（原项目已不再维护，诚邀各位前端大佬共同开发）。
+
+**前端**：
+
+- **React**：热门前端开发组件库，提供丰富的组件和功能。
+- **Umi**：基于 React 的企业级前端应用框架，提供更高的开发效率。
+- **TypeScript**：强类型语言，提供更好的代码提示和开发体验。
+- **Tailwindcss**：CSS 框架，提供跨浏览器一致的样式和布局。
+- **Shadcn/ui**：基于 React 的 UI 组件集合，提供可复用、易用且美观的组件库。
+
+## 本地开发
+
+> 本项目使用 pnpm 作为包管理工具，请确保有 pnpm 环境。
+
+1. **安装依赖**：
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **启动服务**：
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **访问接口**：
+   本地启动应用后，浏览器访问 [http://localhost:8000](http://localhost:8000)
 
-## Learn More
+启动成功后，控制台将输出如下信息：
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+        ╔════════════════════════════════════════════════════╗
+        ║ App listening at:                                  ║
+        ║  >   Local: http://localhost:8000                  ║
+ready - ║  > Network: http://192.168.0.100:8000              ║
+        ║                                                    ║
+        ║ Now you can open browser with the above addresses↑ ║
+        ╚════════════════════════════════════════════════════╝
+```
