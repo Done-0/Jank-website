@@ -8,3 +8,4 @@
 /dist
 .swc
 **/.DS_Store
+.qodo
