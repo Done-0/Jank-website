@@ -1,152 +1,145 @@
-import { useAuthStore } from '@/modules/account/store/authStore'
+/**
+ * HTTP客户端模块
+ * 提供统一的HTTP请求接口和类型定义
+ */
 
 /**
- * 请求配置接口
+ * HTTP请求配置接口
  */
 export interface HttpRequestOptions {
-  data?: any
-  headers?: Record<string, string>
-  method?: 'DELETE' | 'GET' | 'POST' | 'PUT'
-  params?: Record<string, any> | string[][] | URLSearchParams
-  timeout?: number
-  withToken?: boolean
+    data?: any
+    headers?: Record<string, string>
+    method?: 'DELETE' | 'GET' | 'POST' | 'PUT'
+    params?: Record<string, any>
+    timeout?: number
+    withToken?: boolean
+    signal?: AbortSignal
 }
 
 /**
  * HTTP响应接口
  */
 export interface HttpResponse<T = any> {
-  code?: number
-  data: T
-  msg?: string
-  requestId: string
-  timeStamp: number
+    code: number
+    data: T
+    msg: string
+    requestId: string
+    timeStamp: number
 }
 
 /**
- * 默认请求配置
- * @param baseURL 请求基准 URL
- * @param timeout 请求超时时间
- * @param headers 请求头
+ * 基础配置
  */
-const defaultConfig = {
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  timeout: 5000
+const CONFIG = {
+    baseURL: process.env.NEXT_PUBLIC_API_URL || '',
+    headers: { 'Content-Type': 'application/json' },
+    timeout: 30000
 }
 
 /**
- * 请求拦截器：统一添加请求头、日志、token等
- * @param url 请求 URL
- * @param options 请求配置
- * @returns 处理后的请求配置
+ * 构建完整的请求URL，处理查询参数
  */
-const requestInterceptor = (url: string, options: HttpRequestOptions) => {
-  const auth = useAuthStore.getState()
-  const headers = {
-    ...defaultConfig.headers,
-    ...options.headers,
-    ...(options.withToken && auth.accessToken
-      ? { Authorization: `Bearer ${auth.accessToken}` }
-      : {})
-  }
+function buildUrl(api: string, params?: Record<string, any>): string {
+    if (!params) return `${CONFIG.baseURL}${api}`
 
-  return { options: { ...options, headers }, url }
+    const query = Object.entries(params)
+        .filter(([_, v]) => v != null)
+        .map(([k, v]) => {
+            const val = Array.isArray(v)
+                ? v.map(encodeURIComponent).join(',')
+                : encodeURIComponent(String(v))
+            return `${encodeURIComponent(k)}=${val}`
+        })
+        .join('&')
+
+    return query ? `${CONFIG.baseURL}${api}?${query}` : `${CONFIG.baseURL}${api}`
 }
 
 /**
- * 响应拦截器：统一处理响应数据，检查状态码等
- * @param response 响应数据
- * @returns 处理后的响应数据
+ * 核心请求函数
  */
-const responseInterceptor = async <T>(
-  response: Response,
-  options: HttpRequestOptions
-): Promise<HttpResponse<T>> => {
-  if (response.status >= 200 && response.status < 300) {
-    const data: HttpResponse<T> = await response.json()
-    return Promise.resolve(data)
-  } else {
-    const errorData: HttpResponse<T> = await response.json()
-    if (
-      options.withToken &&
-      response.status === 401 &&
-      useAuthStore.getState().refreshToken
-    ) {
-      const retryOptions = {
-        ...options,
-        headers: {
-          ...options.headers,
-          Authorization: `Bearer ${useAuthStore.getState().refreshToken}`
-        }
-      }
-      const retryResponse = await fetch(response.url, {
-        body: options.data ? JSON.stringify(options.data) : undefined,
-        headers: new Headers(retryOptions.headers),
-        method: options.method
-      })
-      return responseInterceptor(retryResponse, options)
-    }
-    return Promise.reject(errorData)
-  }
-}
-
 async function request<T = any>(
-  api: string,
-  options: HttpRequestOptions = {}
+    api: string,
+    options: HttpRequestOptions = {}
 ): Promise<HttpResponse<T>> {
-  const { data, method = 'GET', timeout = defaultConfig.timeout } = options
+    const {
+        data,
+        headers = {},
+        method = 'GET',
+        params,
+        timeout = CONFIG.timeout,
+        signal
+    } = options
 
-  const fullUrl = `${defaultConfig.baseURL}${api}`
+    // 超时控制
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeout)
 
-  const { options: finalOptions, url } = requestInterceptor(fullUrl, options)
+    // 合并信号
+    const reqSignal = signal
+        ? (() => {
+            const ctrl = new AbortController()
+                ;[signal, controller.signal].forEach(s => {
+                    if (s.aborted) return ctrl.abort(s.reason)
+                    s.addEventListener('abort', () => ctrl.abort(s.reason), { once: true })
+                })
+            return ctrl.signal
+        })()
+        : controller.signal
 
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeout)
+    try {
+        const response = await fetch(buildUrl(api, params), {
+            method,
+            headers: new Headers({ ...CONFIG.headers, ...headers }),
+            body: data && method !== 'GET' ? JSON.stringify(data) : undefined,
+            signal: reqSignal
+        })
 
-  try {
-    const response = await fetch(url, {
-      body: data ? JSON.stringify(data) : undefined,
-      headers: new Headers(finalOptions.headers),
-      method,
-      signal: controller.signal
-    })
+        clearTimeout(timeoutId)
 
-    clearTimeout(timeoutId)
+        // 处理响应
+        const result = await response.json().catch(() => ({
+            code: response.status,
+            msg: '无效的响应格式',
+            data: null
+        }))
 
-    return responseInterceptor(response, finalOptions)
-  } catch (error: any) {
-    clearTimeout(timeoutId)
+        if (response.ok) return result
 
-    if (error.name === 'AbortError') {
-      throw new Error('请求超时')
+        throw { ...result, status: response.status, url: api }
+    } catch (error: any) {
+        clearTimeout(timeoutId)
+
+        // 标准化错误
+        if (error.name === 'AbortError') {
+            throw { code: 408, msg: '请求超时', data: null, timeStamp: Date.now(), requestId: '' }
+        }
+
+        throw error.code
+            ? error
+            : { code: 500, msg: error.message || '网络请求失败', data: null, timeStamp: Date.now(), requestId: '' }
     }
-
-    console.error('请求错误', error.message || '服务器错误')
-    throw error
-  }
 }
 
 /**
- * API 请求实例，封装 GET、POST、PUT、DELETE 请求方法
+ * HTTP请求方法
  */
-const http = {
-  delete: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
-    request<T>(api, { data, method: 'DELETE', ...options }),
+export const http = {
+    delete: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
+        request<T>(api, { data, method: 'DELETE', ...options }),
 
-  get: <T = any>(
-    api: string,
-    params?: Record<string, any>,
-    options?: HttpRequestOptions
-  ) => request<T>(api, { method: 'GET', params, ...options }),
+    get: <T = any>(api: string, params?: Record<string, any>, options?: HttpRequestOptions) =>
+        request<T>(api, { params, method: 'GET', ...options }),
 
-  post: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
-    request<T>(api, { data, method: 'POST', ...options }),
+    post: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
+        request<T>(api, { data, method: 'POST', ...options }),
 
-  put: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
-    request<T>(api, { data, method: 'PUT', ...options })
+    put: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
+        request<T>(api, { data, method: 'PUT', ...options })
 }
 
-export default http
+// 服务器端使用的别名，保持兼容性
+export const serverHttp = http
+
+// 单独导出HTTP方法，便于直接使用
+export const { get: httpGet, post: httpPost, put: httpPut, delete: httpDelete } = http 

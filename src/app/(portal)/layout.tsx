@@ -9,7 +9,7 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
   return (
     <>
       <Navbar />
-      <main className='flex-1 py-8'>{children}</main>
+      <div>{children}</div>
     </>
   )
 }

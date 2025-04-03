@@ -7,13 +7,13 @@ import { toast } from 'sonner'
 import {
   getAccountInfoAction,
   loginAction,
+  logoutAction,
   registerAction,
   resetPasswordAction
 } from '../actions/authActions'
-import { logoutUser } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
+import { HttpResponse } from '@/shared/lib/api/http'
 import {
-  ActionResponse,
   GetAccount,
   LoginAccountResponse
 } from '../types/Account'
@@ -23,7 +23,7 @@ import {
   ResetPasswordFormValues
 } from '../validators/form-validators'
 
-type AsyncOperation<T, R> = (data: T) => Promise<ActionResponse<R>>
+type AsyncOperation<T, R> = (data: T) => Promise<HttpResponse<R>>
 
 /**
  * 身份认证钩子
@@ -64,7 +64,7 @@ export function useAuth() {
     try {
       const result = await operation(data)
 
-      if (result.success) {
+      if (result.code === 0) {
         toast.success(result.msg || successMessage)
         if (successCallback && result.data) {
           successCallback(result.data)
@@ -74,7 +74,7 @@ export function useAuth() {
         }
         return true
       } else {
-        const errorMsg = result.msg || result.error || '操作失败'
+        const errorMsg = result.msg || '操作失败'
         setError(errorMsg)
         toast.error(errorMsg)
         return false
@@ -124,7 +124,7 @@ export function useAuth() {
   const handleLogout = async () => {
     setIsLoading(true)
     try {
-      await logoutUser()
+      await logoutAction()
       storeLogout()
       toast.success('退出成功')
       router.push('/login')

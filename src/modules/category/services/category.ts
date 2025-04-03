@@ -1,4 +1,4 @@
-import { http } from '@/shared/lib/api'
+import { http, HttpResponse } from '@/shared/lib/api'
 
 /** 获取单个类目 */
 export const getOneCategory = (data: {

@@ -35,7 +35,7 @@ const linkInactiveStyles =
 /**
  * 移动端导航组件
  */
-export const MobileNav = () => {
+const MobileNav = () => {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -115,61 +115,53 @@ export const Navbar = ({ className }: NavbarProps) => {
   return (
     <header
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 border-b border-border/5 bg-background/80 backdrop-blur-sm',
+        'sticky top-0 z-50 border-b border-border/5 bg-background/80 backdrop-blur-sm',
         className
       )}
     >
-      <div className='md:px-[12.6%]'>
-        <div className='flex h-14 items-center justify-between px-4 md:px-6 lg:px-8'>
-          {/* 左侧 - Logo和导航 */}
-          <div className='flex items-center gap-8'>
-            <Link
-              className='text-lg font-bold text-foreground hover:text-foreground/90 transition-colors'
-              href='/'
-            >
-              {siteConfig.name}
-            </Link>
+      <div className='flex h-14 items-center justify-between px-4 md:px-6 lg:px-8'>
+        {/* 左侧 - Logo和导航 */}
+        <div className='flex items-center gap-8'>
+          <Link
+            className='text-lg font-bold text-foreground hover:text-foreground/90 transition-colors'
+            href='/'
+          >
+            {siteConfig.name}
+          </Link>
 
-            <nav className='hidden md:flex gap-8'>
-              {frontendNavigation.mainNav.map(item => (
-                <Link
-                  className={cn(
-                    'text-sm',
-                    linkBaseStyles,
-                    navLinkStyles,
-                    pathname === item.link
-                      ? linkActiveStyles
-                      : linkInactiveStyles
-                  )}
-                  href={item.link}
-                  key={item.key}
-                >
-                  {item.title}
-                </Link>
-              ))}
-            </nav>
+          <nav className='hidden md:flex gap-8'>
+            {frontendNavigation.mainNav.map(item => (
+              <Link
+                className={cn(
+                  'text-sm',
+                  linkBaseStyles,
+                  navLinkStyles,
+                  pathname === item.link ? linkActiveStyles : linkInactiveStyles
+                )}
+                href={item.link}
+                key={item.key}
+              >
+                {item.title}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        {/* 右侧 - 图标 */}
+        <div className='flex items-center gap-4'>
+          <div className='hidden md:flex items-center gap-4'>
+            <ThemeToggle className={iconButtonStyles} />
+            <Link href='/login'>
+              <Button className={iconButtonStyles} size='icon' variant='ghost'>
+                <User className={iconStyles} />
+                <span className='sr-only'>登录</span>
+              </Button>
+            </Link>
           </div>
 
-          {/* 右侧 - 图标 */}
-          <div className='flex items-center gap-4'>
-            <div className='hidden md:flex items-center gap-4'>
-              <ThemeToggle className={iconButtonStyles} />
-              <Link href='/login'>
-                <Button
-                  className={iconButtonStyles}
-                  size='icon'
-                  variant='ghost'
-                >
-                  <User className={iconStyles} />
-                  <span className='sr-only'>登录</span>
-                </Button>
-              </Link>
-            </div>
-
-            <div className='flex md:hidden items-center gap-4'>
-              <ThemeToggle className={iconButtonStyles} />
-              <MobileNav />
-            </div>
+          <div className='flex md:hidden items-center gap-4'>
+            <ThemeToggle className={iconButtonStyles} />
+            <MobileNav />
           </div>
         </div>
       </div>

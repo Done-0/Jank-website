@@ -1,106 +1,105 @@
 'use server'
 
-import * as authService from '../services/authService'
-import {
-  ActionResponse,
+import { BaseAction } from '@/shared/lib/api/base-action'
+import type {
   GetAccount,
   LoginAccountResponse,
   RegisterAccountResponse
 } from '../types/Account'
+import { HttpResponse } from '@/shared/lib/api/http'
 import {
   LoginFormValues,
   RegisterFormValues,
   ResetPasswordFormValues
 } from '../validators/form-validators'
+import { authService } from '../services/authService'
+import { cache } from 'react'
 
 /**
- * 认证相关的服务端操作
- * 处理表单提交和服务端逻辑
+ * 账户认证操作类
+ * 处理账户相关的服务端逻辑
  */
+class AuthActions extends BaseAction {
+  /**
+   * 获取用户信息
+   */
+  async getAccountInfo(
+    email: string
+  ): Promise<HttpResponse<GetAccount>> {
+    return this.execute(
+      () => authService.getAccountInfo(email),
+      '获取用户信息成功',
+      '获取用户信息失败'
+    )
+  }
 
-/**
- * 获取账户信息操作
- */
-export async function getAccountInfoAction(
-  email: string
-): Promise<ActionResponse<GetAccount>> {
-  try {
-    const response = await authService.getAccountInfo(email)
-    return handleActionSuccess(response, '获取账户信息成功')
-  } catch (error) {
-    return handleActionError(error, '获取账户信息失败')
+  /**
+   * 用户登录
+   */
+  async login(
+    data: LoginFormValues
+  ): Promise<HttpResponse<LoginAccountResponse['data']>> {
+    return this.execute(
+      () => authService.loginUser(data),
+      '登录成功',
+      '登录失败'
+    )
+  }
+
+  /**
+   * 用户注册
+   */
+  async register(
+    data: RegisterFormValues
+  ): Promise<HttpResponse<RegisterAccountResponse['data']>> {
+    return this.execute(
+      () => authService.registerUser(data),
+      '注册成功',
+      '注册失败'
+    )
+  }
+
+  /**
+   * 重置密码
+   */
+  async resetPassword(
+    data: ResetPasswordFormValues
+  ): Promise<HttpResponse<{ success: boolean }>> {
+    return this.execute(
+      () => authService.resetUserPassword(data),
+      '重置密码成功',
+      '重置密码失败'
+    )
+  }
+
+  /**
+   * 用户登出
+   */
+  async logout(): Promise<HttpResponse<null>> {
+    return this.execute(
+      () => authService.logoutUser(),
+      '登出成功',
+      '登出失败'
+    )
   }
 }
 
-/**
- * 登录操作
- */
-export async function loginAction(
-  data: LoginFormValues
-): Promise<ActionResponse<LoginAccountResponse['data']>> {
-  try {
-    const response = await authService.loginUser(data)
-    return handleActionSuccess(response, '登录成功')
-  } catch (error) {
-    return handleActionError(error, '登录失败')
-  }
-}
+// 创建实例
+const authActions = new AuthActions()
 
-/**
- * 注册操作
- */
-export async function registerAction(
-  data: RegisterFormValues
-): Promise<ActionResponse<RegisterAccountResponse['data']>> {
-  try {
-    const response = await authService.registerUser(data)
-    return handleActionSuccess(response, '注册成功')
-  } catch (error) {
-    return handleActionError(error, '注册失败')
-  }
-}
+// 使用缓存优化的账户操作
+export const getAccountInfoAction = cache(async (email: string) =>
+  authActions.getAccountInfo(email)
+)
 
-/**
- * 重置密码操作
- */
-export async function resetPasswordAction(
-  data: ResetPasswordFormValues
-): Promise<ActionResponse<{ success: boolean }>> {
-  try {
-    const response = await authService.resetUserPassword(data)
-    return handleActionSuccess(response, '密码重置成功')
-  } catch (error) {
-    return handleActionError(error, '密码重置失败')
-  }
-}
+export const loginAction = async (data: LoginFormValues) =>
+  authActions.login(data)
 
-/**
- * 通用错误处理函数
- */
-function handleActionError(
-  error: unknown,
-  defaultMessage: string
-): ActionResponse {
-  console.error(`${defaultMessage}操作错误:`, error)
-  return {
-    code: 500,
-    error: error instanceof Error ? error.message : defaultMessage,
-    msg: defaultMessage,
-    success: false
-  }
-}
+export const registerAction = async (data: RegisterFormValues) =>
+  authActions.register(data)
 
-/**
- * 通用成功响应处理函数
- */
-function handleActionSuccess<T>(
-  response: HttpResponse<T>,
-  defaultMessage: string
-): ActionResponse<T> {
-  return {
-    code: response.code ?? 0,
-    data: response.data,
-    msg: response.msg || defaultMessage,
-    success: true
-  }
-}
+export const resetPasswordAction = async (data: ResetPasswordFormValues) =>
+  authActions.resetPassword(data)
+
+export const logoutAction = async () =>
+  authActions.logout()

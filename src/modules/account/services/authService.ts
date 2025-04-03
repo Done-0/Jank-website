@@ -1,7 +1,11 @@
-import { http } from '@/shared/lib/api'
+/**
+ * 账户认证服务类
+ * 负责账户认证相关的API通信
+ */
 
-import type { UserInfo } from '../store/authStore'
-
+import { BaseService } from '@/shared/lib/api/base-service'
+import { HttpResponse } from '@/shared/lib/api'
+import { UserInfo } from '../store/authStore'
 import {
   LoginFormValues,
   RegisterFormValues,
@@ -9,71 +13,82 @@ import {
 } from '../validators/form-validators'
 
 /**
- * 账户认证服务
- * 负责所有直接的API通信
+ * 账户认证服务类
+ * 封装账户认证相关API调用
  */
+export class AuthService extends BaseService {
+  constructor() {
+    super({
+      baseUrl: '/v1/account',
+      useClientApi: true
+    })
+  }
 
-/**
- * 邮箱密码登录
- */
-export const loginUser = (
-  data: LoginFormValues
-): Promise<
-  HttpResponse<{
-    access_token: string
-    refresh_token: string
-    userInfo: UserInfo
-  }>
-> => {
-  return http.post('/v1/account/loginAccount', data)
-}
+  /**
+   * 邮箱密码登录
+   */
+  async loginUser(
+    data: LoginFormValues
+  ): Promise<
+    HttpResponse<{
+      access_token: string
+      refresh_token: string
+      userInfo: UserInfo
+    }>
+  > {
+    return this.post('/loginAccount', data)
+  }
 
-/**
- * 注册新账户
- */
-export const registerUser = (
-  data: RegisterFormValues
-): Promise<
-  HttpResponse<{
+  /**
+   * 注册新账户
+   */
+  async registerUser(
+    data: RegisterFormValues
+  ): Promise<
+    HttpResponse<{
+      email: string
+      nickname: string
+    }>
+  > {
+    return this.post('/registerAccount', data)
+  }
+
+  /**
+   * 获取账户信息
+   */
+  async getAccountInfo(
     email: string
-    nickname: string
-  }>
-> => {
-  return http.post('/v1/account/registerAccount', data)
+  ): Promise<
+    HttpResponse<{
+      avatar: string
+      email: string
+      nickname: string
+      phone: string
+    }>
+  > {
+    return this.post('/getAccount', { email })
+  }
+
+  /**
+   * 退出登录
+   */
+  async logoutUser(): Promise<HttpResponse<null>> {
+    return this.post('/logoutAccount')
+  }
+
+  /**
+   * 重置用户密码
+   */
+  async resetUserPassword(
+    data: ResetPasswordFormValues
+  ): Promise<
+    HttpResponse<{
+      success: boolean
+    }>
+  > {
+    return this.post('/resetPassword', data)
+  }
 }
 
-/**
- * 获取账户信息
- */
-export const getAccountInfo = (
-  email: string
-): Promise<
-  HttpResponse<{
-    avatar: string
-    email: string
-    nickname: string
-    phone: string
-  }>
-> => {
-  return http.post('/v1/account/getAccount', { email })
-}
-
-/**
- * 退出登录
- */
-export const logoutUser = (): Promise<HttpResponse<null>> => {
-  return http.post('/v1/account/logoutAccount')
-}
-
-/**
- * 重置用户密码
- */
-export const resetUserPassword = (
-  data: ResetPasswordFormValues
-): Promise<
-  HttpResponse<{
-    success: boolean
-  }>
-> => {
-  return http.post('/v1/account/resetPassword', data)
-}
+// 单例实例
+export const authService = new AuthService()

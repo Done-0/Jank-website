@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className={cn(inter.className, 'min-h-screen bg-background')}>
         <Providers>
           <div className='flex flex-col min-h-screen md:px-[12.6%]'>
-            <div>{children}</div>
+            <div className='flex-1 space-y-4'>{children}</div>
             <MainFooter />
           </div>
         </Providers>
