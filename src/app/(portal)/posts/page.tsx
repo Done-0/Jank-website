@@ -6,17 +6,23 @@ import { AlertCircle } from 'lucide-react'
 import Loading from '@/shared/components/custom/Loading'
 import { useState, useEffect } from 'react'
 
-/**
- * 帖子列表页面
- */
 export default function PostsPage() {
   const [mounted, setMounted] = useState(false)
-  const { posts, totalPages, currentPage, isLoading, error, handlePageChange } =
-    usePostList(5)
+  const {
+    posts,
+    totalPages,
+    currentPage,
+    isLoading,
+    error,
+    handlePageChange,
+    refreshPage
+  } = usePostList(5)
 
   useEffect(() => {
     setMounted(true)
-  }, [])
+    window.addEventListener('popstate', refreshPage)
+    return () => window.removeEventListener('popstate', refreshPage)
+  }, [refreshPage])
 
   if (!mounted || isLoading) {
     return <Loading fullscreen />
@@ -29,6 +35,14 @@ export default function PostsPage() {
           <AlertCircle className='h-4 w-4 sm:h-5 sm:w-5 text-red-500 dark:text-red-400 flex-shrink-0' />
           <span>{error}</span>
         </div>
+        <div className='mt-4 flex justify-center'>
+          <button
+            onClick={refreshPage}
+            className='px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-md'
+          >
+            重新加载
+          </button>
+        </div>
       </main>
     )
   }
@@ -37,7 +51,7 @@ export default function PostsPage() {
     <main className='container mx-auto px-4 sm:px-6 scroll-animate'>
       <div className='pb-6'>
         <PostList
-          posts={posts}
+          posts={posts || []}
           totalPages={totalPages}
           currentPage={currentPage}
           onPageChange={handlePageChange}

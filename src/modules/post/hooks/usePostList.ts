@@ -4,7 +4,6 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { getPostListAction } from '../actions/postActions'
 import { usePostStore } from '../store/postStore'
 import { toast } from 'sonner'
-import { Post } from '../types/Post'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 
 // 短暂缓存防止重复请求

@@ -14,378 +14,320 @@ type TableOfContentsProps = {
   height?: string
 }
 
-const TableOfContents: React.FC<TableOfContentsProps> = React.memo(
-  ({ contentRef, height = '250px' }) => {
-    const [headings, setHeadings] = useState<Heading[]>([])
-    const [activeId, setActiveId] = useState<string>('')
-    const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
-    const observerRef = useRef<IntersectionObserver | null>(null)
-    const tocContainerRef = useRef<HTMLDivElement>(null)
-    const isManualScrollRef = useRef<boolean>(false)
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const prevActiveIdRef = useRef<string>('')
-    const headingsMapRef = useRef<Map<string, Heading>>(new Map())
+const TableOfContents = React.memo(
+  ({ contentRef, height = '250px' }: TableOfContentsProps) => {
+    const [data, setData] = useState<{
+      headings: Heading[]
+      activeId: string
+      expandedIds: Set<string>
+    }>({
+      headings: [],
+      activeId: '',
+      expandedIds: new Set()
+    })
+    const { headings, activeId, expandedIds } = data
 
-    const handleToggle = useCallback((id: string) => {
-      setExpandedIds(prev => {
-        const newExpanded = new Set(prev)
-        newExpanded.has(id) ? newExpanded.delete(id) : newExpanded.add(id)
-        return newExpanded
-      })
-    }, [])
+    const refs = useRef({
+      observer: null as IntersectionObserver | null,
+      tocContainer: null as HTMLDivElement | null,
+      isManualScroll: false,
+      scrollTimeout: null as NodeJS.Timeout | null
+    })
 
-    const createSafeId = useCallback((text: string): string => {
-      return `heading-${text
-        .trim()
-        .slice(0, 50)
-        .toLowerCase()
-        .replace(/[^\w-]/g, '-')}`
-    }, [])
+    const utils = useMemo(
+      () => ({
+        // 处理展开/折叠
+        toggleExpand: (id: string) =>
+          setData(prev => ({
+            ...prev,
+            expandedIds: new Set(
+              prev.expandedIds.has(id)
+                ? Array.from(prev.expandedIds).filter(i => i !== id)
+                : [...prev.expandedIds, id]
+            )
+          })),
 
-    const parseContent = useCallback(
-      (content: HTMLElement): Heading[] => {
-        const headingElements = content.querySelectorAll(
-          'h1, h2, h3, h4, h5, h6'
-        )
-        const listItems = content.querySelectorAll('ol > li')
-        const allElements: Element[] = []
+        // 安全ID生成
+        createId: (text: string) =>
+          `heading-${text
+            .trim()
+            .slice(0, 50)
+            .toLowerCase()
+            .replace(/[^\w-]/g, '-')}`,
 
-        // 收集有效元素
-        for (let i = 0; i < headingElements.length; i++) {
-          const el = headingElements[i]
-          if (!el.closest('pre, code') && el.textContent?.trim()) {
-            allElements.push(el)
-          }
-        }
+        // 查找父级IDs
+        findParentIds: (headings: Heading[], targetId: string): string[] => {
+          const queue = headings.map(h => ({ item: h, path: [h.id] }))
+          const visited = new Set<string>()
 
-        for (let i = 0; i < listItems.length; i++) {
-          const el = listItems[i]
-          if (
-            !el.closest('pre, code, ul, .non-toc') &&
-            el.textContent?.trim()
-          ) {
-            allElements.push(el)
-          }
-        }
+          while (queue.length > 0) {
+            const { item, path } = queue.shift()!
+            if (item.id === targetId) return path
 
-        // 排序
-        allElements.sort((a, b) => {
-          const position = a.compareDocumentPosition(b)
-          return position & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
-        })
-
-        // 构建标题列表
-        const headingsMap = new Map<string, Heading>()
-        const result: Heading[] = []
-        const stack: Heading[] = []
-
-        for (let i = 0; i < allElements.length; i++) {
-          const el = allElements[i]
-          const level = el.tagName.startsWith('H')
-            ? parseInt(el.tagName.substring(1), 10)
-            : 7
-          const fullText = el.textContent!.trim()
-          const text =
-            fullText.length > 60 ? fullText.slice(0, 57) + '...' : fullText
-          const id = el.id || createSafeId(text)
-          if (!el.id) el.id = id
-
-          const heading = { id, text, level }
-
-          // 构建层次结构
-          while (
-            stack.length &&
-            stack[stack.length - 1].level >= heading.level
-          ) {
-            stack.pop()
-          }
-
-          if (stack.length) {
-            const parent = stack[stack.length - 1]
-            parent.children = parent.children || []
-            parent.children.push(heading)
-          } else {
-            result.push(heading)
-          }
-
-          stack.push(heading)
-          headingsMap.set(heading.id, heading)
-        }
-
-        headingsMapRef.current = headingsMap
-        return result
-      },
-      [createSafeId]
-    )
-
-    const scrollToHeading = useCallback(
-      (id: string) => {
-        if (!contentRef.current) return
-
-        const targetElement = contentRef.current.querySelector(`#${id}`)
-        if (!targetElement) return
-
-        // 平滑滚动到目标元素
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        })
-
-        // 可选：添加一些偏移，避免标题被固定导航栏遮挡
-        const yOffset = -100 // 根据需要调整这个值
-        window.scrollBy({
-          top: yOffset,
-          behavior: 'smooth'
-        })
-
-        // 更新活动ID
-        setActiveId(id)
-      },
-      [contentRef]
-    )
-
-    const findParentIds = useCallback(
-      (headings: Heading[], targetId: string): string[] => {
-        const parentIds: string[] = []
-        const visited = new Set<string>()
-        const queue: Array<{ item: Heading; path: string[] }> = []
-
-        // 初始化队列
-        for (const heading of headings) {
-          queue.push({ item: heading, path: [heading.id] })
-        }
-
-        // BFS搜索
-        while (queue.length > 0) {
-          const { item, path } = queue.shift()!
-
-          if (item.id === targetId) {
-            return path
-          }
-
-          if (item.children && item.children.length > 0) {
-            for (const child of item.children) {
-              if (!visited.has(child.id)) {
-                visited.add(child.id)
-                queue.push({ item: child, path: [...path, child.id] })
+            if (item.children?.length) {
+              for (const child of item.children) {
+                if (!visited.has(child.id)) {
+                  visited.add(child.id)
+                  queue.push({ item: child, path: [...path, child.id] })
+                }
               }
             }
           }
-        }
 
-        return parentIds
-      },
-      []
-    )
+          return []
+        },
 
-    const scrollToActiveItem = useCallback(() => {
-      if (
-        !tocContainerRef.current ||
-        !activeId ||
-        isManualScrollRef.current ||
-        prevActiveIdRef.current === activeId
-      )
-        return
-
-      prevActiveIdRef.current = activeId
-
-      try {
-        const activeElement = tocContainerRef.current.querySelector(
-          `[data-heading-id="${activeId}"]`
-        ) as HTMLElement
-        if (!activeElement) return
-
-        const containerRect = tocContainerRef.current.getBoundingClientRect()
-        const activeRect = activeElement.getBoundingClientRect()
-
-        // 检查元素是否在可视区域内
-        const isVisible =
-          activeRect.top >= containerRect.top + containerRect.height * 0.1 &&
-          activeRect.bottom <= containerRect.bottom - containerRect.height * 0.1
-
-        if (!isVisible) {
-          const targetScroll =
-            tocContainerRef.current.scrollTop +
-            (activeRect.top - containerRect.top - containerRect.height * 0.25)
+        // 页面滚动到标题
+        scrollToHeading: (id: string) => {
+          if (!contentRef.current) return
+          const target = contentRef.current.querySelector(`#${id}`)
+          if (!target) return
 
           requestAnimationFrame(() => {
-            tocContainerRef.current?.scrollTo({
+            window.scrollTo({
+              top: target.getBoundingClientRect().top + window.scrollY - 100,
+              behavior: 'smooth'
+            })
+
+            setData(prev => ({ ...prev, activeId: id }))
+          })
+        },
+
+        // 目录滚动到当前项
+        scrollToActiveItem: (activeId: string) => {
+          if (
+            !refs.current.tocContainer ||
+            !activeId ||
+            refs.current.isManualScroll
+          )
+            return
+
+          const activeEl = refs.current.tocContainer.querySelector(
+            `[data-heading-id="${activeId}"]`
+          ) as HTMLElement
+
+          if (!activeEl) return
+
+          const container = refs.current.tocContainer
+          const containerRect = container.getBoundingClientRect()
+          const activeRect = activeEl.getBoundingClientRect()
+
+          const targetScroll =
+            container.scrollTop +
+            (activeRect.top - containerRect.top) -
+            (containerRect.height / 2 - activeRect.height / 2)
+
+          requestAnimationFrame(() => {
+            container?.scrollTo({
               top: targetScroll,
               behavior: 'smooth'
             })
           })
+        },
+
+        // 解析内容
+        parseContent: (element: HTMLElement): Heading[] => {
+          if (!element) return []
+
+          // 获取有效元素
+          const allElements = [
+            ...Array.from(
+              element.querySelectorAll('h1, h2, h3, h4, h5, h6')
+            ).filter(el => !el.closest('pre, code') && el.textContent?.trim()),
+            ...Array.from(element.querySelectorAll('ol > li')).filter(
+              el =>
+                !el.closest('pre, code, ul, .non-toc') && el.textContent?.trim()
+            )
+          ].sort((a, b) =>
+            a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING
+              ? -1
+              : 1
+          )
+
+          // 构建层次结构
+          const result: Heading[] = []
+          const stack: Heading[] = []
+
+          for (const el of allElements) {
+            const level = el.tagName.startsWith('H')
+              ? parseInt(el.tagName.substring(1), 10)
+              : 7
+            const text = el.textContent!.trim()
+            const displayText =
+              text.length > 60 ? `${text.slice(0, 57)}...` : text
+            const id = el.id || utils.createId(text)
+            if (!el.id) el.id = id
+
+            const heading = { id, text: displayText, level }
+
+            // 维护层级
+            while (
+              stack.length &&
+              stack[stack.length - 1].level >= heading.level
+            )
+              stack.pop()
+
+            if (stack.length) {
+              const parent = stack[stack.length - 1]
+              parent.children = parent.children || []
+              parent.children.push(heading)
+            } else {
+              result.push(heading)
+            }
+
+            stack.push(heading)
+          }
+
+          return result
         }
-      } catch (error) {
-        console.error('Error scrolling to active item:', error)
-      }
-    }, [activeId])
+      }),
+      [contentRef]
+    )
 
-    const handleManualScroll = useCallback(() => {
-      isManualScrollRef.current = true
-      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-      scrollTimeoutRef.current = setTimeout(() => {
-        isManualScrollRef.current = false
-      }, 1000)
-    }, [])
-
-    // 初始化逻辑
+    // 初始化
     useEffect(() => {
       if (!contentRef.current) return
 
-      try {
-        const idleCallback =
-          window.requestIdleCallback || (cb => setTimeout(cb, 1))
+      // 1. 解析内容
+      const headings = utils.parseContent(contentRef.current)
 
-        idleCallback(() => {
-          if (!contentRef.current) return
-
-          const hierarchicalHeadings = parseContent(contentRef.current)
-          setHeadings(hierarchicalHeadings)
-
-          // 只展开第一级标题
-          const firstLevelIds = new Set(hierarchicalHeadings.map(h => h.id))
-          setExpandedIds(firstLevelIds)
-
-          // 设置IntersectionObserver
-          observerRef.current = new IntersectionObserver(
-            entries => {
-              const visibleEntries = entries.filter(
-                entry => entry.isIntersecting
-              )
-              if (visibleEntries.length === 0) return
-
-              // 找到最靠近顶部的元素
-              visibleEntries.sort(
-                (a, b) => a.boundingClientRect.top - b.boundingClientRect.top
-              )
-              const topEntry = visibleEntries[0]
-              const currentId = topEntry.target.id
-
-              if (currentId !== prevActiveIdRef.current) {
-                setActiveId(currentId)
-                const parentIds = findParentIds(hierarchicalHeadings, currentId)
-                if (parentIds.length > 0) {
-                  setExpandedIds(new Set(parentIds))
-                }
-                prevActiveIdRef.current = currentId
-              }
-            },
-            { rootMargin: '-100px 0px -80% 0px', threshold: [0.1, 0.5] }
-          )
-
-          // 观察元素
-          const elements = contentRef.current.querySelectorAll(
-            'h1, h2, h3, h4, h5, h6, ol > li'
-          )
-          for (let i = 0; i < elements.length; i++) {
-            const el = elements[i]
-            if (el.closest('pre, code, ul, .non-toc')) continue
-            if (!el.id && el.textContent) el.id = createSafeId(el.textContent)
-            if (el.id) observerRef.current.observe(el)
-          }
-        })
-      } catch (error) {
-        console.error('Error initializing TableOfContents:', error)
-      }
-
-      return () => {
-        observerRef.current?.disconnect()
-        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-      }
-    }, [contentRef, parseContent, findParentIds, createSafeId])
-
-    // 滚动处理
-    useEffect(() => {
-      if (activeId) {
-        const rafId = requestAnimationFrame(scrollToActiveItem)
-        return () => cancelAnimationFrame(rafId)
-      }
-    }, [activeId, scrollToActiveItem])
-
-    // 事件监听
-    useEffect(() => {
-      const container = tocContainerRef.current
-      if (!container) return
-
-      container.addEventListener('scroll', handleManualScroll, {
-        passive: true
+      // 2. 设置状态
+      setData({
+        headings,
+        activeId: '',
+        expandedIds: new Set(headings.map(h => h.id))
       })
-      return () => {
-        container.removeEventListener('scroll', handleManualScroll)
-        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current)
-      }
-    }, [handleManualScroll])
 
-    const HeadingItem = useMemo(
-      () =>
-        React.memo(({ heading }: { heading: Heading }) => {
-          const indentClass = `pl-${Math.min(8, (heading.level - 1) * 2)}`
-          const isExpanded = expandedIds.has(heading.id)
-          const hasChildren = heading.children && heading.children.length > 0
-          const isActive = activeId === heading.id
+      // 3. 设置观察器
+      refs.current.observer = new IntersectionObserver(
+        entries => {
+          const visible = entries.filter(e => e.isIntersecting)
+          if (!visible.length) return
 
-          const handleClick = (e: React.MouseEvent) => {
-            e.preventDefault() // 阻止默认行为
-
-            // 点击标题时切换展开/折叠状态
-            if (hasChildren) {
-              handleToggle(heading.id)
-            }
-
-            // 滚动到对应标题
-            scrollToHeading(heading.id)
-          }
-
-          return (
-            <li key={heading.id} className={indentClass}>
-              <a
-                href={`#${heading.id}`}
-                className={`block py-1.5 text-sm transition-all duration-300 ease-in-out border-l-2 pl-2 ${
-                  isActive
-                    ? 'text-primary border-primary font-medium'
-                    : 'text-foreground/60 border-transparent hover:border-foreground/20 hover:text-foreground/80'
-                }`}
-                onClick={handleClick}
-                data-heading-id={heading.id}
-              >
-                <span className='truncate'>{heading.text}</span>
-              </a>
-
-              {hasChildren && (
-                <ul
-                  className={`space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
-                    isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  {heading.children!.map(child => (
-                    <HeadingItem key={child.id} heading={child} />
-                  ))}
-                </ul>
-              )}
-            </li>
+          // 获取最靠近顶部的元素
+          const top = visible.reduce((p, c) =>
+            p.boundingClientRect.top < c.boundingClientRect.top ? p : c
           )
-        }),
-      [activeId, expandedIds, handleToggle, scrollToHeading]
+
+          const id = top.target.id
+
+          setData(prev => {
+            if (prev.activeId === id) return prev
+
+            // 查找并展开父级
+            const parentIds = utils.findParentIds(headings, id)
+
+            return {
+              ...prev,
+              activeId: id,
+              expandedIds: parentIds.length
+                ? new Set(parentIds)
+                : prev.expandedIds
+            }
+          })
+        },
+        { rootMargin: '-100px 0px -80% 0px', threshold: [0.1] }
+      )
+
+      // 4. 观察元素
+      contentRef.current
+        .querySelectorAll('h1, h2, h3, h4, h5, h6, ol > li')
+        .forEach((el: Element) => {
+          if (el.closest('pre, code, ul, .non-toc')) return
+          if (!el.id && el.textContent) el.id = utils.createId(el.textContent)
+          if (el.id) refs.current.observer!.observe(el)
+        })
+
+      return () => {
+        refs.current.observer?.disconnect()
+        if (refs.current.scrollTimeout) clearTimeout(refs.current.scrollTimeout)
+      }
+    }, [contentRef, utils])
+
+    // 当活动ID变化时滚动到视图
+    useEffect(() => {
+      if (activeId) utils.scrollToActiveItem(activeId)
+    }, [activeId, utils])
+
+    // 标题项组件
+    const HeadingItem = useCallback(
+      ({ heading }: { heading: Heading }) => {
+        const isExpanded = expandedIds.has(heading.id)
+        const hasChildren = heading.children && heading.children.length > 0
+        const isActive = activeId === heading.id
+
+        const handleClick = (e: React.MouseEvent) => {
+          e.preventDefault()
+          utils.scrollToHeading(heading.id)
+          if (hasChildren) utils.toggleExpand(heading.id)
+        }
+
+        return (
+          <li className={`pl-${Math.min(8, (heading.level - 1) * 2)}`}>
+            <a
+              href={`#${heading.id}`}
+              className={`block py-1.5 text-sm transition-all duration-300 ease-in-out border-l-2 pl-2 ${
+                isActive
+                  ? 'text-primary border-primary font-medium bg-primary/5 dark:bg-primary/10'
+                  : 'text-foreground/60 border-transparent hover:border-foreground/20 hover:text-foreground/80'
+              }`}
+              onClick={handleClick}
+              data-heading-id={heading.id}
+            >
+              <span className='truncate'>{heading.text}</span>
+            </a>
+
+            {hasChildren && (
+              <ul
+                className={`space-y-1 overflow-hidden transition-all duration-300 ease-in-out ${
+                  isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}
+              >
+                {heading.children!.map(child => (
+                  <HeadingItem key={child.id} heading={child} />
+                ))}
+              </ul>
+            )}
+          </li>
+        )
+      },
+      [activeId, expandedIds, utils]
     )
 
-    // 渲染逻辑
-    const renderHeadings = useMemo(() => {
-      if (headings.length === 0) return null
+    // 监听手动滚动
+    const handleScroll = useCallback(() => {
+      refs.current.isManualScroll = true
+      if (refs.current.scrollTimeout) clearTimeout(refs.current.scrollTimeout)
+      refs.current.scrollTimeout = setTimeout(() => {
+        refs.current.isManualScroll = false
+      }, 1000)
+    }, [])
 
-      return (
-        <ul className='space-y-1'>
-          {headings.map(heading => (
-            <HeadingItem key={heading.id} heading={heading} />
-          ))}
-        </ul>
-      )
-    }, [headings, HeadingItem])
+    const setTocRef = useCallback(
+      (node: HTMLDivElement) => {
+        if (node) {
+          refs.current.tocContainer = node
+          node.addEventListener('scroll', handleScroll, { passive: true })
+        }
+      },
+      [handleScroll]
+    )
+
+    useEffect(() => {
+      return () => {
+        const container = refs.current.tocContainer
+        if (container) {
+          container.removeEventListener('scroll', handleScroll)
+        }
+        if (refs.current.scrollTimeout) clearTimeout(refs.current.scrollTimeout)
+      }
+    }, [handleScroll])
 
     return (
       <div className='w-full p-4 border border-border rounded-lg text-card-foreground shadow-sm'>
         <h3 className='text-lg font-medium mb-2'>目录</h3>
         <div
-          ref={tocContainerRef}
+          ref={setTocRef}
           className='overflow-y-auto relative toc-container'
           style={{
             height,
@@ -403,7 +345,13 @@ const TableOfContents: React.FC<TableOfContentsProps> = React.memo(
             }
           `}</style>
           {headings.length > 0 ? (
-            <nav>{renderHeadings}</nav>
+            <nav>
+              <ul className='space-y-1'>
+                {headings.map(heading => (
+                  <HeadingItem key={heading.id} heading={heading} />
+                ))}
+              </ul>
+            </nav>
           ) : (
             <p className='text-sm text-foreground/60 italic'>暂无目录</p>
           )}
@@ -412,5 +360,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = React.memo(
     )
   }
 )
+
+TableOfContents.displayName = 'TableOfContents'
 
 export { TableOfContents }

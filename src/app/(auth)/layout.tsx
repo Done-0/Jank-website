@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <>
       <Navbar />
-      <main className='flex-1 py-8'>{children}</main>
+      <main>{children}</main>
     </>
   )
 }

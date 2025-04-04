@@ -2,7 +2,7 @@
 
 import { BaseAction } from '@/shared/lib/api/base-action'
 import { Post, PostList } from '../types/Post'
-import { postService } from '../services/PostService'
+import { postService } from '../services/postService'
 import { HttpResponse } from '@/shared/lib/api/http'
 import {
   CreatePostFormValues,

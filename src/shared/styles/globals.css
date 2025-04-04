@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
 @layer base {
+  html {
+    overflow-y: scroll;
+  }
   * {
     @apply border-[hsl(var(--border))];
   }

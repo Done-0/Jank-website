@@ -1,0 +1,182 @@
+'use client'
+
+import { useEffect, useState, useRef } from 'react'
+import { useParams } from 'next/navigation'
+import { usePost } from '@/modules/post/hooks/usePost'
+import Loading from '@/shared/components/custom/Loading'
+import { AlertCircle } from 'lucide-react'
+import { Card, CardContent } from '@/shared/components/ui/shadcn/card'
+import parse from 'html-react-parser'
+import { useTheme } from 'next-themes'
+import {
+  createCodeHighlighter,
+  setDocumentTheme,
+  formatHtmlContent
+} from '@/shared/lib/utils'
+import { CopyCodeButton } from '@/modules/post/components/CopyCodeButton'
+import { TableOfContents } from '@/modules/post/components/TableOfPost'
+import '@/shared/lib/utils/highlight/syntax-highlight.css'
+import './post.css'
+
+/**
+ * 文章详情页面
+ */
+export default function PostDetailPage() {
+  const params = useParams()
+  const postId = parseInt(params?.slug as string, 10)
+  const [mounted, setMounted] = useState(false)
+  const [animationDone, setAnimationDone] = useState(false)
+  const { currentPost, isLoading, error, handleGetPostDetail } = usePost(false)
+  const { resolvedTheme } = useTheme()
+  const contentRef = useRef<HTMLDivElement>(null)
+  const formattedRef = useRef(false)
+  const highlighterRef = useRef<ReturnType<
+    typeof createCodeHighlighter
+  > | null>(null)
+  const pageRef = useRef<HTMLDivElement>(null)
+
+  // 初始化数据
+  useEffect(() => {
+    setMounted(true)
+    if (!isNaN(postId)) handleGetPostDetail(postId)
+    return () => highlighterRef.current?.cleanupButtons()
+  }, [postId, handleGetPostDetail])
+
+  // 代码高亮处理
+  useEffect(() => {
+    if (!mounted || !contentRef.current || !currentPost?.content_html) return
+
+    formattedRef.current = false
+    highlighterRef.current?.cleanupButtons()
+
+    if (!highlighterRef.current && contentRef.current) {
+      highlighterRef.current = createCodeHighlighter(contentRef.current, {
+        formattedRef
+      })
+    }
+
+    const applyHighlighting = () => {
+      if (!formattedRef.current && contentRef.current) {
+        setDocumentTheme(resolvedTheme || 'light')
+        highlighterRef.current?.applyFormatting(CopyCodeButton)
+      }
+    }
+
+    applyHighlighting()
+
+    const observer = new MutationObserver(
+      () => !formattedRef.current && applyHighlighting()
+    )
+    contentRef.current &&
+      observer.observe(contentRef.current, { childList: true, subtree: true })
+
+    return () => observer.disconnect()
+  }, [currentPost, mounted, resolvedTheme])
+
+  // 页面加载动画
+  useEffect(() => {
+    if (mounted && currentPost && !animationDone && pageRef.current) {
+      const pageElement = pageRef.current
+      pageElement.style.opacity = '0'
+      pageElement.style.transform = 'translateY(20px)'
+      pageElement.style.transition = 'opacity 0.8s ease, transform 0.8s ease'
+
+      const timer = setTimeout(() => {
+        pageElement.style.opacity = '1'
+        pageElement.style.transform = 'translateY(0)'
+        setAnimationDone(true)
+      }, 100)
+
+      return () => clearTimeout(timer)
+    }
+  }, [mounted, currentPost, animationDone])
+
+  // 条件渲染
+  if (!mounted) return <div className='min-h-screen bg-background' />
+  if (isLoading) return <Loading fullscreen />
+  if (error) {
+    return (
+      <main className='container mx-auto px-4 sm:px-6'>
+        <div className='p-3 sm:p-4 mb-4 rounded-md bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 text-red-800 dark:text-red-300 flex items-center gap-2 text-sm sm:text-base max-w-2xl mx-auto'>
+          <AlertCircle className='h-5 w-5 text-red-500 dark:text-red-400 flex-shrink-0' />
+          <span>{error}</span>
+        </div>
+      </main>
+    )
+  }
+  if (!currentPost) {
+    return (
+      <main className='container mx-auto px-4 sm:px-6'>
+        <Card>
+          <CardContent className='p-6'>
+            <div className='text-center py-8 text-muted-foreground'>
+              文章不存在
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    )
+  }
+
+  const isDark = resolvedTheme === 'dark'
+  const processedContent = formatHtmlContent(currentPost.content_html)
+
+  return (
+    <div className='container mx-auto px-4 sm:px-6' ref={pageRef}>
+      {/* 图片头部 */}
+      <div className='relative mb-6'>
+        <div
+          className='w-full h-64 md:h-80 lg:h-96 overflow-hidden'
+          style={{
+            backgroundImage: `url(${currentPost.image || '/images/default-cover.jpg'})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            borderRadius: '0.5rem 0.5rem 0 0'
+          }}
+        >
+          <div
+            className='absolute inset-0'
+            style={{
+              background: isDark
+                ? 'linear-gradient(to bottom, rgba(9,9,11,0) 0%, rgba(9,9,11,0.5) 70%, rgba(9,9,11,1) 100%)'
+                : 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,1) 100%)'
+            }}
+          ></div>
+        </div>
+        <div className='absolute bottom-0 left-0 right-0 p-6 text-center'>
+          <h1
+            className={`text-xl md:text-2xl lg:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} drop-shadow-sm`}
+          >
+            {currentPost.title}
+          </h1>
+        </div>
+      </div>
+
+      {/* 内容区域 */}
+      <div className='grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6'>
+        <main>
+          <article className='rounded-lg shadow-sm overflow-hidden border'>
+            <div className='article-content hljs-content p-6' ref={contentRef}>
+              {processedContent ? (
+                parse(processedContent)
+              ) : (
+                <p className='text-muted-foreground text-center py-4'>
+                  暂无内容
+                </p>
+              )}
+            </div>
+          </article>
+        </main>
+
+        <aside className='hidden lg:block space-y-6'>
+          <div className='sticky top-20 space-y-6'>
+            <TableOfContents
+              contentRef={contentRef as React.RefObject<HTMLElement>}
+              height='300px'
+            />
+          </div>
+        </aside>
+      </div>
+    </div>
+  )
+}

@@ -69,69 +69,62 @@ export function AnimationProvider({
     [presetOptions, options, disabled]
   )
 
-  // 动画控制函数
-  const disableAnimations = () => {
+  const toggleAnimations = (enable: boolean) => {
     if (typeof document !== 'undefined') {
-      document.body.classList.add('reduce-motion')
-    }
-  }
-
-  const enableAnimations = () => {
-    if (typeof document !== 'undefined') {
-      document.body.classList.remove('reduce-motion')
+      document.body.classList[enable ? 'remove' : 'add']('reduce-motion')
     }
   }
 
   // 初始化动画系统
   useEffect(() => {
-    if (mounted) {
-      const cleanup = initAnimationSystem(mergedOptions)
+    if (!mounted) return
 
-      // 清理函数
-      return () => {
-        cleanup()
+    const cleanup = initAnimationSystem(mergedOptions)
+
+    // 页面加载后添加类以启用动画（防止布局偏移）
+    if (typeof document !== 'undefined') {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.add('is-page-loaded')
+      })
+    }
+
+    return () => {
+      cleanup()
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.remove('is-page-loaded')
       }
     }
   }, [mergedOptions, mounted])
 
-  // 检测用户偏好和设备性能
+  // 检测用户偏好
   useEffect(() => {
-    if (typeof window === 'undefined') return
-    if (initializedRef.current) return
+    if (typeof window === 'undefined' || initializedRef.current) return
 
     initializedRef.current = true
     setMounted(true)
 
-    // 检测减少动画偏好和低端设备
     const prefersReducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     ).matches
-
     const isLowEndDevice =
       !window.matchMedia('(min-width: 768px)').matches ||
       navigator.hardwareConcurrency <= 4 ||
       !!navigator.userAgent.match(/android|mobile/i)
 
-    // 根据检测结果禁用动画
+    // 根据条件禁用动画
     if (prefersReducedMotion || isLowEndDevice || disabled) {
-      disableAnimations()
+      toggleAnimations(false)
     }
 
-    // 处理偏好变化
+    // 监听偏好变化
     const reducedMotionQuery = window.matchMedia(
       '(prefers-reduced-motion: reduce)'
     )
-
     const handleReducedMotionChange = (e: MediaQueryListEvent) => {
-      if (e.matches) {
-        disableAnimations()
-      } else if (!disabled && !isLowEndDevice) {
-        enableAnimations()
-      }
+      toggleAnimations(!(e.matches || disabled || isLowEndDevice))
     }
 
-    // 兼容不同浏览器的事件API
-    if (typeof reducedMotionQuery.addEventListener === 'function') {
+    if (reducedMotionQuery.addEventListener) {
       reducedMotionQuery.addEventListener('change', handleReducedMotionChange)
     } else {
       // @ts-ignore - 兼容旧版浏览器
@@ -139,7 +132,7 @@ export function AnimationProvider({
     }
 
     return () => {
-      if (typeof reducedMotionQuery.removeEventListener === 'function') {
+      if (reducedMotionQuery.removeEventListener) {
         reducedMotionQuery.removeEventListener(
           'change',
           handleReducedMotionChange
@@ -149,7 +142,6 @@ export function AnimationProvider({
         reducedMotionQuery.removeListener(handleReducedMotionChange)
       }
 
-      // 清理动画资源
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('animation-cleanup'))
       }
@@ -158,11 +150,8 @@ export function AnimationProvider({
 
   // 响应禁用状态变化
   useEffect(() => {
-    if (disabled) {
-      disableAnimations()
-    } else if (initializedRef.current) {
-      enableAnimations()
-    }
+    if (!initializedRef.current) return
+    toggleAnimations(!disabled)
   }, [disabled])
 
   // 避免客户端渲染时的闪烁

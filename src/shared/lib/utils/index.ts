@@ -4,3 +4,5 @@
 
 export * from './classname'
 export * from './format'
+export * from './highlight/highlight'
+export * from './highlight/content-processor'
