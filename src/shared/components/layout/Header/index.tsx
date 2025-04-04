@@ -1,10 +1,10 @@
+'use client'
+
 import { seoConfig } from '@/shared/config/seo.config'
 import { siteConfig } from '@/shared/config/site.config'
 import {
   buildUrl,
-  createMetadata,
   formatKeywords,
-  formatTitle,
   getOgImage,
   OptimizedResources,
   SeoProps
@@ -21,7 +21,10 @@ export const PageSeoHead = React.memo((props: SeoProps) => {
       ? { ...seoConfig, ...props.overrideConfig }
       : seoConfig
 
-  const title = formatTitle(props.title, config)
+  // 处理标题
+  const title = !props.title
+    ? siteConfig.name
+    : `${props.title} | ${siteConfig.name}`
   const description = props.description || config.description
   const url = props.canonicalUrl
     ? buildUrl(props.canonicalUrl, config)
@@ -41,6 +44,7 @@ export const PageSeoHead = React.memo((props: SeoProps) => {
       <meta content={config.author} name='author' />
       <meta content='#ffffff' name='theme-color' />
 
+      {/* OpenGraph */}
       <meta content={title} property='og:title' />
       <meta content={description} property='og:description' />
       <meta content={url} property='og:url' />
@@ -48,18 +52,28 @@ export const PageSeoHead = React.memo((props: SeoProps) => {
       <meta content='website' property='og:type' />
       <meta content={siteConfig.name} property='og:site_name' />
 
-      <meta content='summary_large_image' name='twitter:card' />
-      <meta content={title} name='twitter:title' />
-      <meta content={description} name='twitter:description' />
-      <meta content={image} name='twitter:image' />
+      {/* 网站图标 */}
+      {config.additionalLinkTags?.map((link, index) => (
+        <link
+          key={`${link.rel}-${index}`}
+          rel={link.rel}
+          href={link.href}
+          type={link.type}
+          sizes={link.sizes}
+          media={link.media}
+          as={link.as}
+          crossOrigin={
+            link.crossOrigin as 'anonymous' | 'use-credentials' | '' | undefined
+          }
+        />
+      ))}
     </Head>
   )
 })
 
 PageSeoHead.displayName = 'PageSeoHead'
 
-// 导出别名以保持向后兼容
+// 导出别名
 export type PageSeoProps = SeoProps
 export const SEOHeader = PageSeoHead
-export const generateMetadata = createMetadata
 export const ResourceHints = OptimizedResources

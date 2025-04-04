@@ -1,11 +1,14 @@
 import { MainFooter } from '@/shared/components/layout/Footer'
 import { OptimizedResources } from '@/shared/lib/seo'
+import { createMetadata } from '@/shared/lib/seo/metadata'
 import { cn } from '@/shared/lib/utils'
 import { Providers } from '@/shared/providers'
 import '@/shared/styles/globals.css'
 import { Inter } from 'next/font/google'
 
 const inter = Inter({ subsets: ['latin'] })
+
+export const metadata = createMetadata({})
 
 export default function RootLayout({
   children

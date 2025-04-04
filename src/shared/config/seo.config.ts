@@ -1,8 +1,8 @@
 import { siteConfig } from '@/shared/config/site.config'
+import { Metadata } from 'next'
 
 /**
  * SEO配置
- * 定义网站的SEO相关设置
  */
 export const seoConfig: SEOConfig = {
   additionalMetaTags: [
@@ -10,19 +10,21 @@ export const seoConfig: SEOConfig = {
     { content: 'yes', name: 'apple-mobile-web-app-capable' },
     { content: 'default', name: 'apple-mobile-web-app-status-bar-style' },
     { content: 'telephone=no', name: 'format-detection' },
-    { content: siteConfig.name, name: 'application-name' },
+    { content: siteConfig.name, name: 'application-name' }
+  ],
+  additionalLinkTags: [
     {
-      content: 'index, follow, max-image-preview:large, max-snippet:-1',
-      name: 'robots'
+      rel: 'icon',
+      href: siteConfig?.ui?.logo?.light || '/images/jank-bytedance.svg',
+      type: 'image/svg+xml'
+    },
+    {
+      rel: 'apple-touch-icon',
+      href: siteConfig?.ui?.logo?.light || '/images/jank-bytedance.svg'
     }
   ],
-  // 区域设置
-  alternateLocales: [
-    { href: 'https://jank.org.cn/', hrefLang: 'zh-CN' },
-    { href: 'https://jank.org.cn/en', hrefLang: 'en' }
-  ],
-  author: siteConfig.author.name || 'Don-0',
-  canonicalUrlPrefix: 'https://jank.org.cn',
+  author: siteConfig.author.name,
+  canonicalUrlPrefix: siteConfig.url,
   defaultTitle: siteConfig.name,
   description: siteConfig.description,
   keywords: [
@@ -33,7 +35,7 @@ export const seoConfig: SEOConfig = {
     '内容管理系统',
     '高性能'
   ],
-  language: 'zh-CN',
+  language: siteConfig.language,
 
   // 开放图谱协议
   openGraph: {
@@ -42,26 +44,26 @@ export const seoConfig: SEOConfig = {
       {
         alt: siteConfig.name,
         height: 630,
-        url: 'https://jank.org.cn/og-image.png',
+        url: `${siteConfig.url}/og-image.png`,
         width: 1200
       },
       {
         alt: `${siteConfig.name} Logo`,
         height: 800,
-        url: 'https://jank.org.cn/og-image-square.png',
+        url: `${siteConfig.url}/og-image-square.png`,
         width: 800
       }
     ],
-    locale: 'zh-CN',
+    locale: siteConfig.language,
     siteName: siteConfig.name,
     title: siteConfig.name,
     type: 'website',
-    url: 'https://jank.org.cn'
+    url: siteConfig.url
   },
 
   // 性能优化配置
   performance: {
-    dnsPreconnect: ['https://jank.org.cn'],
+    dnsPreconnect: [siteConfig.url],
     preconnectOrigins: [
       'https://fonts.googleapis.com',
       'https://fonts.gstatic.com'
@@ -74,10 +76,10 @@ export const seoConfig: SEOConfig = {
     organization: {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      logo: 'https://jank.org.cn/logo.png',
+      logo: siteConfig?.ui?.logo?.light || '/images/jank-bytedance.svg',
       name: siteConfig.name,
-      sameAs: ['https://github.com/Don-0'],
-      url: 'https://jank.org.cn'
+      sameAs: [siteConfig.author.url],
+      url: siteConfig.url
     },
     website: {
       '@context': 'https://schema.org',
@@ -87,22 +89,47 @@ export const seoConfig: SEOConfig = {
       potentialAction: {
         '@type': 'SearchAction',
         'query-input': 'required name=search_term_string',
-        target: 'https://jank.org.cn/search?q={search_term_string}'
+        target: `${siteConfig.url}/search?q={search_term_string}`
       },
-      url: 'https://jank.org.cn'
+      url: siteConfig.url
     }
   },
 
-  // 基础SEO元数据
   title: siteConfig.name,
+  titleTemplate: `%s | ${siteConfig.name}`
+}
 
-  titleTemplate: `%s | ${siteConfig.name}`,
-
-  // Twitter卡片
-  twitter: {
-    cardType: 'summary_large_image',
+/**
+ * App Router元数据配置
+ * 用于Next.js 13+ App Router的metadata API
+ */
+export const appMetadata: Metadata = {
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.author.name, url: siteConfig.author.url }],
+  keywords: seoConfig.keywords,
+  icons: {
+    icon: siteConfig?.ui?.logo?.light || '/images/jank-bytedance.svg',
+    apple: siteConfig?.ui?.logo?.light || '/images/jank-bytedance.svg'
+  },
+  openGraph: {
+    type: 'website',
+    siteName: siteConfig.name,
+    title: siteConfig.name,
     description: siteConfig.description,
-    site: '@jank_site',
-    title: siteConfig.name
+    url: siteConfig.url,
+    locale: siteConfig.language,
+    images: [
+      {
+        url: `${siteConfig.url}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name
+      }
+    ]
   }
 }

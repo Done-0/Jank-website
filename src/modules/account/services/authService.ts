@@ -27,9 +27,7 @@ export class AuthService extends BaseService {
   /**
    * 邮箱密码登录
    */
-  async loginUser(
-    data: LoginFormValues
-  ): Promise<
+  async loginUser(data: LoginFormValues): Promise<
     HttpResponse<{
       access_token: string
       refresh_token: string
@@ -42,9 +40,7 @@ export class AuthService extends BaseService {
   /**
    * 注册新账户
    */
-  async registerUser(
-    data: RegisterFormValues
-  ): Promise<
+  async registerUser(data: RegisterFormValues): Promise<
     HttpResponse<{
       email: string
       nickname: string
@@ -56,9 +52,7 @@ export class AuthService extends BaseService {
   /**
    * 获取账户信息
    */
-  async getAccountInfo(
-    email: string
-  ): Promise<
+  async getAccountInfo(email: string): Promise<
     HttpResponse<{
       avatar: string
       email: string
@@ -79,9 +73,7 @@ export class AuthService extends BaseService {
   /**
    * 重置用户密码
    */
-  async resetUserPassword(
-    data: ResetPasswordFormValues
-  ): Promise<
+  async resetUserPassword(data: ResetPasswordFormValues): Promise<
     HttpResponse<{
       success: boolean
     }>

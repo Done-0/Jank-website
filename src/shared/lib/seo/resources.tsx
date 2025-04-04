@@ -2,8 +2,7 @@ import { seoConfig } from '@/shared/config/seo.config'
 import React from 'react'
 
 /**
- * 资源预加载组件
- * 用于优化关键资源加载速度
+ * 资源优化组件
  */
 export const OptimizedResources = React.memo(() => (
   <>
@@ -20,7 +19,7 @@ export const OptimizedResources = React.memo(() => (
       />
     ))}
 
-    {/* 预加载其他资源 */}
+    {/* 预加载资源 */}
     {seoConfig.performance?.preloadAssets?.map((asset, i) => (
       <link
         as={asset.as}
@@ -29,6 +28,22 @@ export const OptimizedResources = React.memo(() => (
         key={`preload-${i}`}
         rel='preload'
         type={asset.type}
+      />
+    ))}
+
+    {/* 网站图标 */}
+    {seoConfig.additionalLinkTags?.map((link, i) => (
+      <link
+        key={`link-${i}`}
+        rel={link.rel}
+        href={link.href}
+        type={link.type}
+        sizes={link.sizes}
+        media={link.media}
+        as={link.as}
+        crossOrigin={
+          link.crossOrigin as 'anonymous' | 'use-credentials' | '' | undefined
+        }
       />
     ))}
   </>

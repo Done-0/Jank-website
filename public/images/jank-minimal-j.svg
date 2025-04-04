@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+    <!-- 单一颜色的极简J，完全居中 -->
+    <path
+        d="M30,25
+           L70,25
+           L70,70
+           C70,85 60,95 45,95
+           L30,95"
+        fill="none"
+        stroke="#2563eb"
+        stroke-width="8"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+</svg> 

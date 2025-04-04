@@ -118,6 +118,7 @@ declare interface SiteConfig {
         animation?: {                 // 动画配置
             enabled: boolean;
             reducedMotion: string;
+            preset?: string;          // 动画预设
         };
         layout?: {                    // 布局配置
             maxWidth: string;

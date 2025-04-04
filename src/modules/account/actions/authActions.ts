@@ -23,9 +23,7 @@ class AuthActions extends BaseAction {
   /**
    * 获取用户信息
    */
-  async getAccountInfo(
-    email: string
-  ): Promise<HttpResponse<GetAccount>> {
+  async getAccountInfo(email: string): Promise<HttpResponse<GetAccount>> {
     return this.execute(
       () => authService.getAccountInfo(email),
       '获取用户信息成功',
@@ -76,11 +74,7 @@ class AuthActions extends BaseAction {
    * 用户登出
    */
   async logout(): Promise<HttpResponse<null>> {
-    return this.execute(
-      () => authService.logoutUser(),
-      '登出成功',
-      '登出失败'
-    )
+    return this.execute(() => authService.logoutUser(), '登出成功', '登出失败')
   }
 }
 
@@ -101,5 +95,4 @@ export const registerAction = async (data: RegisterFormValues) =>
 export const resetPasswordAction = async (data: ResetPasswordFormValues) =>
   authActions.resetPassword(data)
 
-export const logoutAction = async () =>
-  authActions.logout()
+export const logoutAction = async () => authActions.logout()

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="240" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- 主要渐变 -->
+        <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#36F1CD" />
+            <stop offset="50%" stop-color="#13C2C2" />
+            <stop offset="100%" stop-color="#1677FF" />
+        </linearGradient>
+
+        <!-- 次要渐变  -->
+        <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FF4D4F" />
+            <stop offset="100%" stop-color="#F759AB" />
+        </linearGradient>
+    </defs>
+
+    <!-- 背景 -->
+    <rect width="240" height="240" fill="transparent" />
+
+    <!-- 主要"J"形状和动画 -->
+    <g transform="translate(86, 77.5)">
+        <!-- J形状 -->
+        <path
+            d="M0,0 L55,0 C62,0 68,6 68,13 L68,55 C68,72 55,85 38,85 L0,85 L0,68 L33,68 C40,68 45,63 45,56 L45,22 L0,22 Z"
+            fill="url(#primaryGradient)"
+        />
+
+        <!-- 横线动画组 -->
+        <g>
+            <!-- 第一条横线动画 -->
+            <rect x="15" y="32" width="0" height="7" rx="3.5" fill="url(#secondaryGradient)">
+                <animate
+                    attributeName="width"
+                    values="0;35;35;0"
+                    keyTimes="0;0.3;0.7;1"
+                    dur="1.5s"
+                    repeatCount="indefinite" />
+            </rect>
+
+            <!-- 第二条横线动画 -->
+            <rect x="15" y="46" width="0" height="7" rx="3.5" fill="url(#secondaryGradient)">
+                <animate
+                    attributeName="width"
+                    values="0;22;22;0"
+                    keyTimes="0;0.3;0.7;1"
+                    dur="1.5s"
+                    begin="0.3s"
+                    repeatCount="indefinite" />
+            </rect>
+        </g>
+    </g>
+</svg>

@@ -8,13 +8,16 @@
  * @param date 日期
  * @param locale 区域设置
  */
-export function formatDate(date: Date | string | number, locale: string = 'zh-CN'): string {
-    const d = date instanceof Date ? date : new Date(date)
-    return d.toLocaleDateString(locale, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
+export function formatDate(
+  date: Date | string | number,
+  locale: string = 'zh-CN'
+): string {
+  const d = date instanceof Date ? date : new Date(date)
+  return d.toLocaleDateString(locale, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
 }
 
 /**
@@ -24,14 +27,14 @@ export function formatDate(date: Date | string | number, locale: string = 'zh-CN
  * @param locale 区域设置
  */
 export function formatCurrency(
-    amount: number,
-    currency: string = 'CNY',
-    locale: string = 'zh-CN'
+  amount: number,
+  currency: string = 'CNY',
+  locale: string = 'zh-CN'
 ): string {
-    return new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency
-    }).format(amount)
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency
+  }).format(amount)
 }
 
 /**
@@ -39,10 +42,10 @@ export function formatCurrency(
  * @param bytes 字节数
  */
 export function formatFileSize(bytes: number): string {
-    if (bytes === 0) return '0 Bytes'
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
-    const i = Math.floor(Math.log(bytes) / Math.log(1024))
-    return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`
+  if (bytes === 0) return '0 Bytes'
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`
 }
 
 /**
@@ -51,8 +54,8 @@ export function formatFileSize(bytes: number): string {
  * @param maxLength 最大长度
  */
 export function truncateText(text: string, maxLength: number): string {
-    if (text.length <= maxLength) return text
-    return text.slice(0, maxLength) + '...'
+  if (text.length <= maxLength) return text
+  return text.slice(0, maxLength) + '...'
 }
 
 /**
@@ -61,5 +64,5 @@ export function truncateText(text: string, maxLength: number): string {
  * @param locale 区域设置
  */
 export function formatNumber(num: number, locale: string = 'zh-CN'): string {
-    return new Intl.NumberFormat(locale).format(num)
+  return new Intl.NumberFormat(locale).format(num)
 }

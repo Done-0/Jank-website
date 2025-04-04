@@ -17,6 +17,7 @@ import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Logo } from '@/shared/components/custom/Logo'
 
 interface NavbarProps {
   className?: string
@@ -122,12 +123,7 @@ export const Navbar = ({ className }: NavbarProps) => {
       <div className='flex h-14 items-center justify-between px-4 md:px-6 lg:px-8'>
         {/* 左侧 - Logo和导航 */}
         <div className='flex items-center gap-8'>
-          <Link
-            className='text-lg font-bold text-foreground hover:text-foreground/90 transition-colors'
-            href='/'
-          >
-            {siteConfig.name}
-          </Link>
+          <Logo size='sm' showText={false} />
 
           <nav className='hidden md:flex gap-8'>
             {frontendNavigation.mainNav.map(item => (
