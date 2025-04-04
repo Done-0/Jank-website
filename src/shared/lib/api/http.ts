@@ -32,9 +32,9 @@ export interface HttpResponse<T = any> {
  * 基础配置
  */
 const CONFIG = {
-  baseURL: siteConfig?.api?.baseUrl || process.env.NEXT_PUBLIC_API_URL || '',
+  baseURL: siteConfig?.api?.baseUrl,
   headers: { 'Content-Type': 'application/json' },
-  timeout: siteConfig?.api?.timeout || 10000
+  timeout: siteConfig?.api?.timeout
 }
 
 /**
@@ -156,10 +156,8 @@ export const http = {
     request<T>(api, { data, method: 'PUT', ...options })
 }
 
-// 服务器端使用的别名，保持兼容性
 export const serverHttp = http
 
-// 单独导出HTTP方法，便于直接使用
 export const {
   get: httpGet,
   post: httpPost,

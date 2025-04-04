@@ -253,6 +253,7 @@ export default function Home() {
                       fetchPriority='high'
                       height={720}
                       loading='eager'
+                      priority
                       src='/images/home-black.png'
                       width={1280}
                     />

@@ -33,11 +33,21 @@
 }
 
 /* 延迟类 */
-.delay-anim-1 { animation-delay: 30ms; }
-.delay-anim-2 { animation-delay: 70ms; }
-.delay-anim-3 { animation-delay: 110ms; }
-.delay-anim-4 { animation-delay: 150ms; }
-.delay-anim-5 { animation-delay: 190ms; }
+.delay-anim-1 {
+  animation-delay: 30ms;
+}
+.delay-anim-2 {
+  animation-delay: 70ms;
+}
+.delay-anim-3 {
+  animation-delay: 110ms;
+}
+.delay-anim-4 {
+  animation-delay: 150ms;
+}
+.delay-anim-5 {
+  animation-delay: 190ms;
+}
 
 /* 无障碍 */
 .reduce-motion .scroll-animate {

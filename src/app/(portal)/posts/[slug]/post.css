@@ -7,46 +7,66 @@
 }
 
 /* 列表样式 */
-.article-content ul, 
+.article-content ul,
 .article-content ol {
   margin: 0 0 1.25em 2em;
   padding: 0;
   list-style-position: outside;
 }
-.article-content ul { list-style-type: disc; }
-.article-content ol { list-style-type: decimal; }
-.article-content ul ul { list-style-type: circle; }
-.article-content li { 
-  margin-bottom: 0.375em; 
-  display: list-item; 
+.article-content ul {
+  list-style-type: disc;
+}
+.article-content ol {
+  list-style-type: decimal;
+}
+.article-content ul ul {
+  list-style-type: circle;
+}
+.article-content li {
+  margin-bottom: 0.375em;
+  display: list-item;
 }
 
 /* 标题样式 */
-.article-content h1, 
-.article-content h2, 
-.article-content h3, 
-.article-content h4, 
-.article-content h5, 
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
 .article-content h6 {
   font-weight: 600;
   margin-top: 1.5em;
   margin-bottom: 0.75em;
   line-height: 1.25;
 }
-.article-content h1 { font-size: 1.875rem; }
-.article-content h2 { font-size: 1.5rem; }
-.article-content h3 { font-size: 1.25rem; }
-.article-content h4 { font-size: 1.125rem; }
-.article-content h5, 
-.article-content h6 { font-size: 1rem; }
+.article-content h1 {
+  font-size: 1.875rem;
+}
+.article-content h2 {
+  font-size: 1.5rem;
+}
+.article-content h3 {
+  font-size: 1.25rem;
+}
+.article-content h4 {
+  font-size: 1.125rem;
+}
+.article-content h5,
+.article-content h6 {
+  font-size: 1rem;
+}
 
 /* 段落和链接 */
-.article-content p { margin-bottom: 1.25em; }
-.article-content a { 
-  color: #58a6ff; 
+.article-content p {
+  margin-bottom: 1.25em;
+}
+.article-content a {
+  color: #58a6ff;
   text-decoration: none;
 }
-.article-content a:hover { text-decoration: underline; }
+.article-content a:hover {
+  text-decoration: underline;
+}
 
 /* 高亮内容类 */
 .article-content.hljs-content pre,

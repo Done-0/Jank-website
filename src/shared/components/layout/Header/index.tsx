@@ -1,79 +1,88 @@
-'use client'
-
+import { Metadata } from 'next'
 import { seoConfig } from '@/shared/config/seo.config'
 import { siteConfig } from '@/shared/config/site.config'
-import {
-  buildUrl,
-  formatKeywords,
-  getOgImage,
-  OptimizedResources,
-  SeoProps
-} from '@/shared/lib/seo'
-import Head from 'next/head'
-import React from 'react'
 
-/**
- * Pages Router SEO组件
- */
-export const PageSeoHead = React.memo((props: SeoProps) => {
-  const config =
-    props.overrideConfig && Object.keys(props.overrideConfig).length > 0
-      ? { ...seoConfig, ...props.overrideConfig }
-      : seoConfig
+/** SEO元数据配置项 */
+export interface SeoProps {
+  title?: string
+  description?: string
+  keywords?: string[]
+  canonicalUrl?: string
+  ogImage?: string
+  noIndex?: boolean
+}
 
-  // 处理标题
-  const title = !props.title
-    ? siteConfig.name
-    : `${props.title} | ${siteConfig.name}`
-  const description = props.description || config.description
-  const url = props.canonicalUrl
-    ? buildUrl(props.canonicalUrl, config)
-    : config.canonicalUrlPrefix || ''
-  const image = getOgImage(props.ogImage)
-  const keywords = props.keywords || seoConfig.keywords
+// 预构建OG图像配置
+const defaultOgImage = {
+  url: `${siteConfig.url}/og-image.svg`,
+  width: 1200,
+  height: 630,
+  alt: siteConfig.name
+}
 
-  return (
-    <Head>
-      <title>{title}</title>
-      <meta content={description} name='description' />
-      <meta content={formatKeywords(keywords)} name='keywords' />
-      <link href={url} rel='canonical' />
-      {props.noIndex && <meta content='noindex, nofollow' name='robots' />}
+/** 站点统一元数据配置 */
+export const metadata: Metadata = {
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`
+  },
+  description: siteConfig.description,
+  metadataBase: new URL(siteConfig.url),
+  applicationName: siteConfig.name,
+  authors: [{ name: siteConfig.author.name, url: siteConfig.author.url }],
+  keywords: seoConfig.meta.keywords,
+  icons: {
+    icon: seoConfig.assets.icons.favicon
+  },
+  openGraph: {
+    type: 'website',
+    siteName: siteConfig.name,
+    title: siteConfig.name,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    locale: siteConfig.language,
+    images: [defaultOgImage]
+  },
+  alternates: {
+    canonical: siteConfig.url
+  },
+  robots: 'index, follow',
+  other: {
+    'script:ld+json:organization': JSON.stringify(
+      seoConfig.schemas.organization
+    ),
+    'script:ld+json:website': JSON.stringify(seoConfig.schemas.website)
+  }
+}
 
-      <meta content={siteConfig.name} name='application-name' />
-      <meta content={config.author} name='author' />
-      <meta content='#ffffff' name='theme-color' />
+/** 生成特定页面的元数据配置 */
+export function generatePageMetadata({
+  title,
+  description = seoConfig.meta.description,
+  keywords = seoConfig.meta.keywords,
+  canonicalUrl,
+  ogImage,
+  noIndex = false
+}: SeoProps = {}): Metadata {
+  const base = siteConfig.url
+  const url = canonicalUrl
+    ? `${base}${canonicalUrl.startsWith('/') ? canonicalUrl : `/${canonicalUrl}`}`
+    : base
 
-      {/* OpenGraph */}
-      <meta content={title} property='og:title' />
-      <meta content={description} property='og:description' />
-      <meta content={url} property='og:url' />
-      <meta content={image} property='og:image' />
-      <meta content='website' property='og:type' />
-      <meta content={siteConfig.name} property='og:site_name' />
-
-      {/* 网站图标 */}
-      {config.additionalLinkTags?.map((link, index) => (
-        <link
-          key={`${link.rel}-${index}`}
-          rel={link.rel}
-          href={link.href}
-          type={link.type}
-          sizes={link.sizes}
-          media={link.media}
-          as={link.as}
-          crossOrigin={
-            link.crossOrigin as 'anonymous' | 'use-credentials' | '' | undefined
-          }
-        />
-      ))}
-    </Head>
-  )
-})
-
-PageSeoHead.displayName = 'PageSeoHead'
-
-// 导出别名
-export type PageSeoProps = SeoProps
-export const SEOHeader = PageSeoHead
-export const ResourceHints = OptimizedResources
+  return {
+    title,
+    description: description || siteConfig.description,
+    keywords,
+    alternates: { canonical: url },
+    openGraph: {
+      title: title ? `${title} | ${siteConfig.name}` : siteConfig.name,
+      description: description || siteConfig.description,
+      url,
+      type: 'website',
+      siteName: siteConfig.name,
+      locale: siteConfig.language,
+      images: ogImage ? [{ ...defaultOgImage, url: ogImage }] : [defaultOgImage]
+    },
+    robots: noIndex ? 'noindex, nofollow' : 'index, follow'
+  }
+}
