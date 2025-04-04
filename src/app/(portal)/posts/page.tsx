@@ -25,7 +25,7 @@ export default function PostsPage() {
   }, [refreshPage])
 
   if (!mounted || isLoading) {
-    return <Loading fullscreen />
+    return <Loading fullscreen allowScroll />
   }
 
   if (error) {

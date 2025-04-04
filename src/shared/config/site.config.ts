@@ -91,8 +91,8 @@ export const siteConfig: SiteConfig = {
       navPosition: 'top'
     },
     logo: {
-      dark: '/images/jank-bytedance.svg',
-      light: '/images/jank-bytedance.svg'
+      dark: '',
+      light: ''
     },
     typography: {
       fontFamily: {

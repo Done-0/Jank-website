@@ -15,6 +15,7 @@ export class CodeHighlighter {
     private isFormatted: { current: boolean }
     private buttons: RootRef[]
     private cleanup: () => void
+    private highlightedElements: Set<HTMLElement>
 
     constructor(
         element: HTMLElement,
@@ -26,6 +27,7 @@ export class CodeHighlighter {
         this.isFormatted = isFormatted
         this.buttons = buttons
         this.cleanup = cleanup || (() => { })
+        this.highlightedElements = new Set<HTMLElement>()
 
         // 添加高亮样式类
         if (element && !element.classList.contains('hljs-content')) {
@@ -33,10 +35,12 @@ export class CodeHighlighter {
         }
     }
 
-    // 清理按钮
+    // 清理按钮和高亮状态
     cleanupButtons(): void {
         const buttons = [...this.buttons]
         this.buttons.length = 0
+        this.highlightedElements.clear()
+        this.isFormatted.current = false
 
         requestAnimationFrame(() => {
             buttons.forEach(({ root, container }) => {
@@ -58,13 +62,18 @@ export class CodeHighlighter {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 try {
-                    // 代码高亮
-                    this.element.querySelectorAll('pre code').forEach(block => {
-                        hljs.highlightElement(block as HTMLElement)
+                    // 代码高亮，只处理未高亮的元素
+                    const codeBlocks = this.element.querySelectorAll('pre code:not([data-highlighted="yes"])')
+                    codeBlocks.forEach(block => {
+                        const element = block as HTMLElement
+                        if (!this.highlightedElements.has(element)) {
+                            hljs.highlightElement(element)
+                            this.highlightedElements.add(element)
+                        }
                     })
 
-                    // 添加复制按钮
-                    const preElements = this.element.querySelectorAll('pre')
+                    // 添加复制按钮，只处理未添加按钮的元素
+                    const preElements = this.element.querySelectorAll('pre:not([data-button-added="true"])')
                     if (preElements.length === 0) {
                         resolve(true)
                         return
@@ -72,14 +81,16 @@ export class CodeHighlighter {
 
                     const { createRoot } = await import('react-dom/client')
                     preElements.forEach(pre => {
-                        pre.style.position = 'relative'
+                        const preElement = pre as HTMLElement
+                        preElement.style.position = 'relative'
+                        preElement.setAttribute('data-button-added', 'true')
 
-                        const code = pre.querySelector('code')
+                        const code = preElement.querySelector('code')
                         if (!code) return
 
                         const container = document.createElement('div')
                         container.className = 'absolute top-2 right-2 z-10'
-                        pre.appendChild(container)
+                        preElement.appendChild(container)
 
                         const root = createRoot(container)
 

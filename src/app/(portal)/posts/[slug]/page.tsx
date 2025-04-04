@@ -46,31 +46,53 @@ export default function PostDetailPage() {
   useEffect(() => {
     if (!mounted || !contentRef.current || !currentPost?.content_html) return
 
-    formattedRef.current = false
+    // 清理之前的高亮
     highlighterRef.current?.cleanupButtons()
+    formattedRef.current = false
 
+    // 仅在内容变化或主题变化时创建高亮器
     if (!highlighterRef.current && contentRef.current) {
       highlighterRef.current = createCodeHighlighter(contentRef.current, {
         formattedRef
       })
     }
 
+    // 应用高亮处理
     const applyHighlighting = () => {
-      if (!formattedRef.current && contentRef.current) {
+      if (
+        !formattedRef.current &&
+        contentRef.current &&
+        highlighterRef.current
+      ) {
         setDocumentTheme(resolvedTheme || 'light')
-        highlighterRef.current?.applyFormatting(CopyCodeButton)
+        highlighterRef.current.applyFormatting(CopyCodeButton)
       }
     }
 
-    applyHighlighting()
+    // 延迟应用高亮，确保内容已经渲染
+    const timer = setTimeout(applyHighlighting, 300)
 
-    const observer = new MutationObserver(
-      () => !formattedRef.current && applyHighlighting()
-    )
-    contentRef.current &&
-      observer.observe(contentRef.current, { childList: true, subtree: true })
+    let debounceTimer: NodeJS.Timeout | null = null
+    const observer = new MutationObserver(() => {
+      if (formattedRef.current) return
 
-    return () => observer.disconnect()
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(applyHighlighting, 300)
+    })
+
+    if (contentRef.current) {
+      observer.observe(contentRef.current, {
+        childList: true,
+        subtree: true,
+        attributes: false
+      })
+    }
+
+    return () => {
+      observer.disconnect()
+      if (debounceTimer) clearTimeout(debounceTimer)
+      clearTimeout(timer)
+    }
   }, [currentPost, mounted, resolvedTheme])
 
   // 页面加载动画
@@ -93,7 +115,7 @@ export default function PostDetailPage() {
 
   // 条件渲染
   if (!mounted) return <div className='min-h-screen bg-background' />
-  if (isLoading) return <Loading fullscreen />
+  if (isLoading) return <Loading fullscreen allowScroll />
   if (error) {
     return (
       <main className='container mx-auto px-4 sm:px-6'>
