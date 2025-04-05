@@ -1,7 +1,12 @@
 /**
  * API服务基类
  */
-import { HttpRequestOptions, HttpResponse, HttpError, ServiceConfig } from './types'
+import {
+  HttpRequestOptions,
+  HttpResponse,
+  HttpError,
+  ServiceConfig
+} from './types'
 import { http, serverHttp } from './http'
 
 /**
@@ -9,10 +14,10 @@ import { http, serverHttp } from './http'
  * 封装常见的API操作，可被各模块服务继承
  */
 export class BaseService {
-  protected baseUrl: string         // 必选：API基础路径
-  protected api: typeof serverHttp  // 功能：使用服务端API
-  protected serviceName: string     // 标识：服务名称
-  protected silent: boolean         // 调试：允许日志输出
+  protected baseUrl: string // 必选：API基础路径
+  protected api: typeof serverHttp // 功能：使用服务端API
+  protected serviceName: string // 标识：服务名称
+  protected silent: boolean // 调试：允许日志输出
 
   constructor(config: ServiceConfig) {
     this.baseUrl = config.baseUrl
@@ -35,7 +40,11 @@ export class BaseService {
    */
   protected validateResponse<T>(response: HttpResponse<T>): HttpResponse<T> {
     if (response.code !== 200) {
-      console.warn(`[${this.serviceName}] 接口返回错误码:`, response.code, response.msg)
+      console.warn(
+        `[${this.serviceName}] 接口返回错误码:`,
+        response.code,
+        response.msg
+      )
     }
     return response
   }
@@ -69,11 +78,10 @@ export class BaseService {
     options?: HttpRequestOptions
   ): Promise<HttpResponse<T>> {
     try {
-      const response = await this.api.post<T>(
-        this.getFullUrl(endpoint),
-        data,
-        { silent: this.silent, ...options }
-      )
+      const response = await this.api.post<T>(this.getFullUrl(endpoint), data, {
+        silent: this.silent,
+        ...options
+      })
       return this.validateResponse(response)
     } catch (error) {
       return this.handleError<T>(error as HttpError)
@@ -89,11 +97,10 @@ export class BaseService {
     options?: HttpRequestOptions
   ): Promise<HttpResponse<T>> {
     try {
-      const response = await this.api.put<T>(
-        this.getFullUrl(endpoint),
-        data,
-        { silent: this.silent, ...options }
-      )
+      const response = await this.api.put<T>(this.getFullUrl(endpoint), data, {
+        silent: this.silent,
+        ...options
+      })
       return this.validateResponse(response)
     } catch (error) {
       return this.handleError<T>(error as HttpError)

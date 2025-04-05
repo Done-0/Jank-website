@@ -19,7 +19,7 @@ export class PostService extends BaseService {
       baseUrl: '/v1/post',
       useClientApi: false,
       serviceName: 'PostService',
-      silent: false
+      silent: true
     })
   }
 

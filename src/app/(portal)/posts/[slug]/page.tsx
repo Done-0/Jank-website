@@ -6,6 +6,7 @@ import { usePost } from '@/modules/post/hooks/usePost'
 import Loading from '@/shared/components/custom/Loading'
 import { AlertCircle } from 'lucide-react'
 import { Card, CardContent } from '@/shared/components/ui/shadcn/card'
+import Image from 'next/image'
 import parse from 'html-react-parser'
 import { useTheme } from 'next-themes'
 import {
@@ -25,7 +26,6 @@ export default function PostDetailPage() {
   const params = useParams()
   const postId = parseInt(params?.slug as string, 10)
   const [mounted, setMounted] = useState(false)
-  const [animationDone, setAnimationDone] = useState(false)
   const { currentPost, isLoading, error, handleGetPostDetail } = usePost(false)
   const { resolvedTheme } = useTheme()
   const contentRef = useRef<HTMLDivElement>(null)
@@ -39,25 +39,28 @@ export default function PostDetailPage() {
   useEffect(() => {
     setMounted(true)
     if (!isNaN(postId)) handleGetPostDetail(postId)
-    return () => highlighterRef.current?.cleanupButtons()
+
+    return () => {
+      if (highlighterRef.current) {
+        highlighterRef.current.cleanupButtons()
+        highlighterRef.current = null
+      }
+      formattedRef.current = false
+    }
   }, [postId, handleGetPostDetail])
 
   // 代码高亮处理
   useEffect(() => {
     if (!mounted || !contentRef.current || !currentPost?.content_html) return
 
-    // 清理之前的高亮
-    highlighterRef.current?.cleanupButtons()
-    formattedRef.current = false
-
-    // 仅在内容变化或主题变化时创建高亮器
-    if (!highlighterRef.current && contentRef.current) {
+    // 创建高亮处理器
+    if (contentRef.current) {
       highlighterRef.current = createCodeHighlighter(contentRef.current, {
         formattedRef
       })
     }
 
-    // 应用高亮处理
+    // 应用高亮函数
     const applyHighlighting = () => {
       if (
         !formattedRef.current &&
@@ -69,51 +72,50 @@ export default function PostDetailPage() {
       }
     }
 
-    // 延迟应用高亮，确保内容已经渲染
-    const timer = setTimeout(applyHighlighting, 300)
+    // 延迟应用高亮
+    const timeoutId = setTimeout(() => applyHighlighting(), 300)
 
-    let debounceTimer: NodeJS.Timeout | null = null
-    const observer = new MutationObserver(() => {
-      if (formattedRef.current) return
-
-      if (debounceTimer) clearTimeout(debounceTimer)
-      debounceTimer = setTimeout(applyHighlighting, 300)
-    })
-
+    // 监听DOM变化
     if (contentRef.current) {
+      const observer = new MutationObserver(() => {
+        if (formattedRef.current) return
+        setTimeout(() => applyHighlighting(), 300)
+      })
+
       observer.observe(contentRef.current, {
         childList: true,
         subtree: true,
         attributes: false
       })
+
+      return () => {
+        observer.disconnect()
+        clearTimeout(timeoutId)
+      }
     }
 
-    return () => {
-      observer.disconnect()
-      if (debounceTimer) clearTimeout(debounceTimer)
-      clearTimeout(timer)
-    }
-  }, [currentPost, mounted, resolvedTheme])
-
-  // 页面加载动画
-  useEffect(() => {
-    if (mounted && currentPost && !animationDone && pageRef.current) {
+    // 页面淡入动画
+    if (pageRef.current) {
       const pageElement = pageRef.current
       pageElement.style.opacity = '0'
       pageElement.style.transform = 'translateY(20px)'
       pageElement.style.transition = 'opacity 0.8s ease, transform 0.8s ease'
 
-      const timer = setTimeout(() => {
-        pageElement.style.opacity = '1'
-        pageElement.style.transform = 'translateY(0)'
-        setAnimationDone(true)
-      }, 100)
+      requestAnimationFrame(() => {
+        const animTimer = setTimeout(() => {
+          if (pageElement) {
+            pageElement.style.opacity = '1'
+            pageElement.style.transform = 'translateY(0)'
+          }
+        }, 100)
 
-      return () => clearTimeout(timer)
+        return () => clearTimeout(animTimer)
+      })
     }
-  }, [mounted, currentPost, animationDone])
 
-  // 条件渲染
+    return () => clearTimeout(timeoutId)
+  }, [currentPost, mounted, resolvedTheme])
+
   if (!mounted) return <div className='min-h-screen bg-background' />
   if (isLoading) return <Loading fullscreen allowScroll />
   if (error) {
@@ -141,21 +143,22 @@ export default function PostDetailPage() {
   }
 
   const isDark = resolvedTheme === 'dark'
-  const processedContent = formatHtmlContent(currentPost.content_html)
+  const processedContent = currentPost.content_html
+    ? formatHtmlContent(currentPost.content_html)
+    : null
 
   return (
     <div className='container mx-auto px-4 sm:px-6' ref={pageRef}>
-      {/* 图片头部 */}
       <div className='relative mb-6'>
-        <div
-          className='w-full h-64 md:h-80 lg:h-96 overflow-hidden'
-          style={{
-            backgroundImage: `url(${currentPost.image || '/images/default-cover.jpg'})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            borderRadius: '0.5rem 0.5rem 0 0'
-          }}
-        >
+        <div className='w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-t-lg relative'>
+          <Image
+            src={currentPost.image || '/images/default-cover.jpg'}
+            alt={currentPost.title}
+            fill
+            sizes='100vw'
+            className='object-cover'
+            priority
+          />
           <div
             className='absolute inset-0'
             style={{
@@ -163,7 +166,7 @@ export default function PostDetailPage() {
                 ? 'linear-gradient(to bottom, rgba(9,9,11,0) 0%, rgba(9,9,11,0.5) 70%, rgba(9,9,11,1) 100%)'
                 : 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 70%, rgba(255,255,255,1) 100%)'
             }}
-          ></div>
+          />
         </div>
         <div className='absolute bottom-0 left-0 right-0 p-6 text-center'>
           <h1
@@ -174,7 +177,6 @@ export default function PostDetailPage() {
         </div>
       </div>
 
-      {/* 内容区域 */}
       <div className='grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6'>
         <main>
           <article className='rounded-lg shadow-sm overflow-hidden border'>
@@ -190,8 +192,8 @@ export default function PostDetailPage() {
           </article>
         </main>
 
-        <aside className='hidden lg:block space-y-6'>
-          <div className='sticky top-20 space-y-6'>
+        <aside className='hidden lg:block'>
+          <div className='sticky top-20'>
             <TableOfContents
               contentRef={contentRef as React.RefObject<HTMLElement>}
               height='300px'

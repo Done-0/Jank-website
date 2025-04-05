@@ -3,12 +3,16 @@
  */
 
 // 导入HTTP客户端
-import { http } from './http';
+import { http } from './http'
 
 // 类型导出
 export type {
-  HttpRequestOptions, HttpResponse, HttpError,
-  ServiceConfig, ApiResponse, ActionResponse
+  HttpRequestOptions,
+  HttpResponse,
+  HttpError,
+  ServiceConfig,
+  ApiResponse,
+  ActionResponse
 } from './types'
 
 // 错误相关
@@ -16,10 +20,7 @@ export { ErrorCode } from './types'
 export { AppError, errors } from './errors'
 
 // 响应处理
-export {
-  createSuccess, createError,
-  isSuccess, apiToAction
-} from './response'
+export { createSuccess, createError, isSuccess, apiToAction } from './response'
 
 // 全局配置
 export { httpConfig } from './config'

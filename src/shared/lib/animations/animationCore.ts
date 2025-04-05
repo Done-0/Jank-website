@@ -82,7 +82,7 @@ if (isBrowser) {
   })
 
   if (!(window as any).__animationCleanupRegistered) {
-    ; (window as any).__animationCleanupRegistered = true
+    ;(window as any).__animationCleanupRegistered = true
 
     window.addEventListener('popstate', () => {
       setTimeout(cleanupResources, 100)
@@ -210,7 +210,7 @@ export function cleanupResources(
  * @returns 清理函数，用于停止观察并释放资源
  */
 export function initAnimationSystem(options?: AnimationOptions): () => void {
-  if (!isBrowser || !hasIO || !hasRAF) return () => { }
+  if (!isBrowser || !hasIO || !hasRAF) return () => {}
 
   if (getIsInitialized()) {
     cleanupResources()

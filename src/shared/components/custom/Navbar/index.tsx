@@ -10,33 +10,54 @@ import {
 } from '@/shared/components/ui/shadcn/sheet'
 import { frontendNavigation } from '@/shared/config/navigation.config'
 import { siteConfig } from '@/shared/config/site.config'
-import { ThemeToggle } from '@/shared/lib/theme'
 import { cn } from '@/shared/lib/utils'
-import { Menu, User } from 'lucide-react'
+import { Menu, User, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Logo } from '@/shared/components/custom/Logo'
-
-interface NavbarProps {
-  className?: string
-}
+import React from 'react'
 
 // 公共样式
 const iconButtonStyles =
-  'h-9 w-9 p-0 opacity-70 hover:opacity-100 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-200'
-const iconStyles = 'h-5 w-5'
-const navLinkStyles = 'transition-colors duration-200'
-const linkBaseStyles = 'font-medium'
-const linkActiveStyles = 'text-foreground font-semibold'
-const linkInactiveStyles =
-  'text-foreground/70 hover:text-foreground hover:font-medium'
+  'h-9 w-9 p-0 opacity-85 hover:opacity-100 hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 transition-colors duration-200'
+const iconStyles = 'h-[18px] w-[18px]'
+const linkStyles = {
+  base: 'font-medium transition-colors duration-200',
+  active: 'text-foreground font-semibold',
+  inactive: 'text-foreground/80 hover:text-foreground hover:font-medium'
+}
 
-/**
- * 移动端导航组件
- */
-const MobileNav = () => {
+// 主题切换按钮组件
+const ThemeButton = React.memo(() => {
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => setMounted(true), [])
+
+  return (
+    <Button
+      className={iconButtonStyles}
+      size='icon'
+      variant='ghost'
+      aria-label='切换主题'
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+    >
+      {mounted &&
+        (theme === 'dark' ? (
+          <Sun className={iconStyles} />
+        ) : (
+          <Moon className={iconStyles} />
+        ))}
+      <span className='sr-only'>切换主题</span>
+    </Button>
+  )
+})
+ThemeButton.displayName = 'ThemeButton'
+
+// 移动端导航组件
+const MobileNav = React.memo(() => {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -61,15 +82,15 @@ const MobileNav = () => {
         className='w-[300px] pr-0 border-l border-border'
         side='right'
         style={{
-          backdropFilter: 'none !important',
+          backdropFilter: 'none',
           backgroundColor: mounted
             ? theme === 'dark'
               ? '#09090b'
               : '#ffffff'
             : '#ffffff',
-          boxShadow: '0 0 15px rgba(0, 0, 0, 0.1) !important',
-          opacity: '1 !important',
-          WebkitBackdropFilter: 'none !important'
+          boxShadow: '0 0 15px rgba(0, 0, 0, 0.1)',
+          opacity: '1',
+          WebkitBackdropFilter: 'none'
         }}
       >
         <SheetHeader className='mb-6'>
@@ -78,7 +99,7 @@ const MobileNav = () => {
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-2 border-b border-border/5 pb-4'>
             <Link
-              className={`flex items-center py-2 text-base ${linkBaseStyles} ${linkInactiveStyles}`}
+              className={`flex items-center py-2 text-base ${linkStyles.base} ${linkStyles.inactive}`}
               href='/login'
               onClick={() => setOpen(false)}
               aria-label='登录账户'
@@ -92,15 +113,14 @@ const MobileNav = () => {
               const isActive = pathname === item.link
               return (
                 <Link
+                  key={item.key}
+                  href={item.link}
+                  onClick={() => setOpen(false)}
                   className={cn(
                     'flex items-center py-2 text-base',
-                    linkBaseStyles,
-                    navLinkStyles,
-                    isActive ? linkActiveStyles : linkInactiveStyles
+                    linkStyles.base,
+                    isActive ? linkStyles.active : linkStyles.inactive
                   )}
-                  href={item.link}
-                  key={item.key}
-                  onClick={() => setOpen(false)}
                   aria-current={isActive ? 'page' : undefined}
                   aria-label={`导航到${item.title}`}
                 >
@@ -113,37 +133,36 @@ const MobileNav = () => {
       </SheetContent>
     </Sheet>
   )
-}
+})
+MobileNav.displayName = 'MobileNav'
 
-/**
- * 导航栏组件
- */
-export const Navbar = ({ className }: NavbarProps) => {
+// 导航栏组件
+export const Navbar = React.memo(({ className }: { className?: string }) => {
   const pathname = usePathname()
 
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 border-b border-border/5 bg-background/80 backdrop-blur-sm',
+        'sticky top-0 z-50 border-b border-border/5 bg-background/90 backdrop-blur-lg',
         className
       )}
     >
       <div className='flex h-14 items-center justify-between px-4 md:px-6 lg:px-8'>
-        {/* 左侧 - Logo和导航 */}
         <div className='flex items-center gap-8'>
           <Logo size='sm' showText={false} />
 
           <nav className='hidden md:flex gap-8'>
             {frontendNavigation.mainNav.map(item => (
               <Link
+                key={item.key}
+                href={item.link}
                 className={cn(
                   'text-sm',
-                  linkBaseStyles,
-                  navLinkStyles,
-                  pathname === item.link ? linkActiveStyles : linkInactiveStyles
+                  linkStyles.base,
+                  pathname === item.link
+                    ? linkStyles.active
+                    : linkStyles.inactive
                 )}
-                href={item.link}
-                key={item.key}
                 aria-current={pathname === item.link ? 'page' : undefined}
                 aria-label={`导航到${item.title}`}
               >
@@ -153,10 +172,9 @@ export const Navbar = ({ className }: NavbarProps) => {
           </nav>
         </div>
 
-        {/* 右侧 - 图标 */}
         <div className='flex items-center gap-4'>
           <div className='hidden md:flex items-center gap-4'>
-            <ThemeToggle className={iconButtonStyles} />
+            <ThemeButton />
             <Link href='/login' aria-label='登录账户'>
               <Button
                 className={iconButtonStyles}
@@ -171,11 +189,12 @@ export const Navbar = ({ className }: NavbarProps) => {
           </div>
 
           <div className='flex md:hidden items-center gap-4'>
-            <ThemeToggle className={iconButtonStyles} />
+            <ThemeButton />
             <MobileNav />
           </div>
         </div>
       </div>
     </header>
   )
-}
+})
+Navbar.displayName = 'Navbar'

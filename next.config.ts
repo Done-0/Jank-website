@@ -8,15 +8,17 @@ import type { NextConfig } from 'next'
 // 环境配置
 const isProd = process.env.NEXT_PUBLIC_ENV === 'production'
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://127.0.0.1:9010/api'
-const securityHeaders = [{
-  source: '/:path*',
-  headers: [
-    { key: 'X-DNS-Prefetch-Control', value: 'on' },
-    { key: 'X-XSS-Protection', value: '1; mode=block' },
-    { key: 'X-Content-Type-Options', value: 'nosniff' },
-    { key: 'Referrer-Policy', value: 'origin-when-cross-origin' }
-  ]
-}]
+const securityHeaders = [
+  {
+    source: '/:path*',
+    headers: [
+      { key: 'X-DNS-Prefetch-Control', value: 'on' },
+      { key: 'X-XSS-Protection', value: '1; mode=block' },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Referrer-Policy', value: 'origin-when-cross-origin' }
+    ]
+  }
+]
 
 // 基础配置
 const baseConfig: NextConfig = {
@@ -28,32 +30,44 @@ const baseConfig: NextConfig = {
     formats: ['image/webp'],
     remotePatterns: [{ protocol: 'https', hostname: '**' }]
   } as any,
-  rewrites: async () => apiUrl ? [{
-    source: '/api/:path*',
-    destination: `${apiUrl}/:path*`
-  }] : [],
+  rewrites: async () =>
+    apiUrl
+      ? [
+          {
+            source: '/api/:path*',
+            destination: `${apiUrl}/:path*`
+          }
+        ]
+      : [],
   headers: async () => securityHeaders
 }
 
 // 生产环境扩展
-const prodExtend = isProd ? {
-  compiler: { removeConsole: { exclude: ['error', 'warn'] } },
-  webpack: (cfg: any) => ({
-    ...cfg,
-    optimization: {
-      ...cfg.optimization,
-      minimize: true,
-      splitChunks: { chunks: 'all' },
-      usedExports: true
+const prodExtend = isProd
+  ? {
+      compiler: { removeConsole: { exclude: ['error', 'warn'] } },
+      webpack: (cfg: any) => ({
+        ...cfg,
+        optimization: {
+          ...cfg.optimization,
+          minimize: true,
+          splitChunks: { chunks: 'all' },
+          usedExports: true
+        }
+      }),
+      headers: async () => [
+        ...securityHeaders,
+        {
+          source: '/(.*)\\.(jpg|png|webp|svg|js|css|woff2)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable'
+            }
+          ]
+        }
+      ]
     }
-  }),
-  headers: async () => [
-    ...securityHeaders,
-    {
-      source: '/(.*)\\.(jpg|png|webp|svg|js|css|woff2)',
-      headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }]
-    }
-  ]
-} : {}
+  : {}
 
 export default { ...baseConfig, ...prodExtend }

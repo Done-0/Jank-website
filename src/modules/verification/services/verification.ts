@@ -17,16 +17,22 @@ export class VerificationService extends BaseService {
    * 获取图形验证码
    * @param email 用户邮箱
    */
-  async fetchImgVerificationCode(email: string): Promise<HttpResponse<{ imgBase64: string }>> {
+  async fetchImgVerificationCode(
+    email: string
+  ): Promise<HttpResponse<{ imgBase64: string }>> {
     this.validateEmail(email)
-    return this.get<{ imgBase64: string }>('/sendImgVerificationCode', { email })
+    return this.get<{ imgBase64: string }>('/sendImgVerificationCode', {
+      email
+    })
   }
 
   /**
    * 发送邮箱验证码
    * @param email 用户邮箱
    */
-  async sendEmailVerificationCode(email: string): Promise<HttpResponse<string>> {
+  async sendEmailVerificationCode(
+    email: string
+  ): Promise<HttpResponse<string>> {
     this.validateEmail(email)
     return this.get<string>('/sendEmailVerificationCode', { email })
   }
@@ -45,7 +51,7 @@ export class VerificationService extends BaseService {
    * 重写响应验证方法
    */
   protected validateResponse<T>(response: HttpResponse<T>): HttpResponse<T> {
-    response = super.validateResponse(response);
+    response = super.validateResponse(response)
 
     // 图形验证码特殊处理
     if (
@@ -54,17 +60,17 @@ export class VerificationService extends BaseService {
       'imgBase64' in response.data &&
       !response.data.imgBase64
     ) {
-      console.error('验证码接口返回无效数据', response);
+      console.error('验证码接口返回无效数据', response)
       return {
         code: 500,
         msg: '获取验证码失败',
         data: { imgBase64: '' } as unknown as T,
         requestId: response.requestId,
         timeStamp: Date.now()
-      };
+      }
     }
 
-    return response;
+    return response
   }
 
   /**
@@ -72,7 +78,7 @@ export class VerificationService extends BaseService {
    */
   protected handleError<T>(error: HttpError): never {
     if (error.code === 404) error.msg = '验证服务不可用，请稍后重试'
-    throw error;
+    throw error
   }
 }
 

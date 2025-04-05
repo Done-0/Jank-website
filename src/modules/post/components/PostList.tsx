@@ -32,7 +32,8 @@ const PostItem = memo(({ post, index, setRef, onClick, extractText }: any) => (
           className='object-cover transition-transform duration-500 ease-out group-hover:scale-105'
           fill
           sizes='(max-width: 768px) 33vw, 25vw'
-          loading='lazy'
+          loading={index === 0 ? undefined : 'lazy'}
+          priority={index === 0}
           quality={80}
         />
       </div>

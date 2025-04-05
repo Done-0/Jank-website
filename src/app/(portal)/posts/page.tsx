@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 
 export default function PostsPage() {
   const [mounted, setMounted] = useState(false)
+
   const {
     posts,
     totalPages,
@@ -20,9 +21,7 @@ export default function PostsPage() {
 
   useEffect(() => {
     setMounted(true)
-    window.addEventListener('popstate', refreshPage)
-    return () => window.removeEventListener('popstate', refreshPage)
-  }, [refreshPage])
+  }, [])
 
   if (!mounted || isLoading) {
     return <Loading fullscreen allowScroll />
@@ -48,7 +47,7 @@ export default function PostsPage() {
   }
 
   return (
-    <main className='container mx-auto px-4 sm:px-6 scroll-animate'>
+    <main className='container mx-auto p-4 sm:px-6 scroll-animate'>
       <div className='pb-6'>
         <PostList
           posts={posts || []}
