@@ -1,7 +1,7 @@
 /**
  * 动画系统预设配置
  */
-import { siteConfig } from '@/shared/config/site.config'
+import { siteConfig } from '@shared/config/site.config'
 import { AnimationOptions } from './animationTypes'
 
 export const ANIMATION_PRESETS: Record<string, AnimationOptions> = {

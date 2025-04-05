@@ -1,7 +1,7 @@
 /**
  * API配置模块
  */
-import { siteConfig } from '@/shared/config/site.config'
+import { siteConfig } from '@shared/config/site.config'
 
 /**
  * HTTP全局配置

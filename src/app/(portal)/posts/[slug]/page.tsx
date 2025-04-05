@@ -3,9 +3,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import { usePost } from '@/modules/post/hooks/usePost'
-import Loading from '@/shared/components/custom/Loading'
+import Loading from '@shared/components/custom/Loading'
 import { AlertCircle } from 'lucide-react'
-import { Card, CardContent } from '@/shared/components/ui/shadcn/card'
+import { Card, CardContent } from '@shared/components/ui/shadcn/card'
 import Image from 'next/image'
 import parse from 'html-react-parser'
 import { useTheme } from 'next-themes'
@@ -13,10 +13,10 @@ import {
   createCodeHighlighter,
   setDocumentTheme,
   formatHtmlContent
-} from '@/shared/lib/utils'
+} from '@shared/lib/utils'
 import { CopyCodeButton } from '@/modules/post/components/CopyCodeButton'
 import { TableOfContents } from '@/modules/post/components/TableOfPost'
-import '@/shared/lib/utils/highlight/syntax-highlight.css'
+import '@shared/lib/utils/highlight/syntax-highlight.css'
 import './post.css'
 
 /**

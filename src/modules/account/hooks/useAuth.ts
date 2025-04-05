@@ -12,7 +12,7 @@ import {
   resetPasswordAction
 } from '../actions/authActions'
 import { useAuthStore } from '../store/authStore'
-import { HttpResponse } from '@/shared/lib/api/http'
+import { HttpResponse } from '@shared/lib/api/http'
 import { GetAccount, LoginAccountResponse } from '../types/Account'
 import {
   LoginFormValues,

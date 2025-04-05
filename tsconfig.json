@@ -13,7 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "plugins": [
       {
         "name": "next"
@@ -22,7 +22,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@app/*": ["./src/app/*"],
-      "@shared/*": ["./src/shared/*"],
+      "@shared/*": ["./src/shared/*"]
     }
   },
   "include": [

@@ -1,6 +1,6 @@
 'use client'
 
-import { siteConfig } from '@/shared/config/site.config'
+import { siteConfig } from '@shared/config/site.config'
 import Link from 'next/link'
 import React from 'react'
 
@@ -13,9 +13,9 @@ export interface FooterProps {
 }
 
 /**
- * 彻底固定无偏移页脚组件
+ * 页脚组件
  */
-export const MainFooter = React.memo(({ className = '' }: FooterProps) => {
+export function MainFooter({ className = '' }: FooterProps) {
   const currentYear = new Date().getFullYear()
   const beianIcp = siteConfig.beian?.icp
 
@@ -48,9 +48,7 @@ export const MainFooter = React.memo(({ className = '' }: FooterProps) => {
       </div>
     </footer>
   )
-})
-
-MainFooter.displayName = 'MainFooter'
+}
 
 // 导出别名以保持向后兼容
 export const MinimalFooter = MainFooter

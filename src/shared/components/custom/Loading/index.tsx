@@ -1,14 +1,14 @@
 'use client'
 
 import React, { memo, useEffect } from 'react'
-import { cn } from '@/shared/lib/utils/classname'
-import { generateMultipleIds } from '@/shared/lib/utils/assets'
+import { cn } from '@shared/lib/utils/classname'
+import { generateMultipleIds } from '@shared/lib/utils/assets'
 import {
   SVGContainer,
   SVGGradients,
   SVGPath,
   SVGRect
-} from '@/shared/lib/utils/assets/svg'
+} from '@shared/lib/utils/assets/svg'
 
 // Loading组件接口
 interface LoadingProps {

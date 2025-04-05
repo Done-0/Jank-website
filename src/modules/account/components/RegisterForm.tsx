@@ -1,8 +1,8 @@
 'use client'
 
 import { fetchVerificationCode } from '@/modules/verification/services/verification'
-import { Button } from '@/shared/components/ui/shadcn/button'
-import { Form } from '@/shared/components/ui/shadcn/form'
+import { Button } from '@shared/components/ui/shadcn/button'
+import { Form } from '@shared/components/ui/shadcn/form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Lock, Mail, User } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'

@@ -1,4 +1,4 @@
-import { Navbar } from '@/shared/components/custom/Navbar'
+import { Navbar } from '@shared/components/custom/Navbar'
 import { ReactNode } from 'react'
 
 interface PortalLayoutProps {

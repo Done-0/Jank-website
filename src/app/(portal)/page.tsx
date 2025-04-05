@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, CardContent } from '@/shared/components/ui/shadcn/card'
-import { Button } from '@/shared/components/ui/shadcn/button'
+import { Card, CardContent } from '@shared/components/ui/shadcn/card'
+import { Button } from '@shared/components/ui/shadcn/button'
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
-import { Badge } from '@/shared/components/ui/shadcn/badge'
+import { Badge } from '@shared/components/ui/shadcn/badge'
 import {
   ArrowRight,
   ChevronRight,

@@ -1,6 +1,6 @@
 'use client'
 
-import { siteConfig } from '@/shared/config/site.config'
+import { siteConfig } from '@shared/config/site.config'
 import { ThemeProvider as NextThemeProvider } from 'next-themes'
 import React from 'react'
 

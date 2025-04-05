@@ -2,15 +2,15 @@
 
 import React, { memo } from 'react'
 import Link from 'next/link'
-import { cn } from '@/shared/lib/utils/classname'
-import { siteConfig } from '@/shared/config/site.config'
-import { useResource, generateMultipleIds } from '@/shared/lib/utils/assets'
+import { cn } from '@shared/lib/utils/classname'
+import { siteConfig } from '@shared/config/site.config'
+import { useResource, generateMultipleIds } from '@shared/lib/utils/assets'
 import {
   SVGContainer,
   SVGGradients,
   SVGPath,
   SVGRect
-} from '@/shared/lib/utils/assets/svg'
+} from '@shared/lib/utils/assets/svg'
 
 // Logo组件接口
 interface LogoProps {

@@ -1,22 +1,22 @@
 'use client'
 
-import { Button } from '@/shared/components/ui/shadcn/button'
+import { Button } from '@shared/components/ui/shadcn/button'
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger
-} from '@/shared/components/ui/shadcn/sheet'
-import { frontendNavigation } from '@/shared/config/navigation.config'
-import { siteConfig } from '@/shared/config/site.config'
-import { cn } from '@/shared/lib/utils'
+} from '@shared/components/ui/shadcn/sheet'
+import { frontendNavigation } from '@shared/config/navigation.config'
+import { siteConfig } from '@shared/config/site.config'
+import { cn } from '@shared/lib/utils'
 import { Menu, User, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Logo } from '@/shared/components/custom/Logo'
+import { Logo } from '@shared/components/custom/Logo'
 import React from 'react'
 
 // 公共样式

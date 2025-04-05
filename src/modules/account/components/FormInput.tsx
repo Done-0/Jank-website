@@ -6,8 +6,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from '@/shared/components/ui/shadcn/form'
-import { Input } from '@/shared/components/ui/shadcn/input'
+} from '@shared/components/ui/shadcn/form'
+import { Input } from '@shared/components/ui/shadcn/input'
 import { LucideIcon } from 'lucide-react'
 import { Control } from 'react-hook-form'
 

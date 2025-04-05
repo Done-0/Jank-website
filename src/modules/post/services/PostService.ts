@@ -1,4 +1,4 @@
-import { BaseService, HttpResponse } from '@/shared/lib/api'
+import { BaseService, HttpResponse } from '@shared/lib/api'
 import {
   CreatePostRequest,
   DeletePostRequest,

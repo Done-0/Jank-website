@@ -1,7 +1,7 @@
 'use client'
 
 import React, { memo } from 'react'
-import { cn } from '@/shared/lib/utils/classname'
+import { cn } from '@shared/lib/utils/classname'
 
 // 通用SVG渐变定义组件
 export const SVGGradient = memo(

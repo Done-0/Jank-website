@@ -1,6 +1,6 @@
 'use server'
 
-import { BaseAction, HttpResponse } from '@/shared/lib/api'
+import { BaseAction, HttpResponse } from '@shared/lib/api'
 import { Post, PostList } from '../types/Post'
 import { postService } from '../services/postService'
 import {

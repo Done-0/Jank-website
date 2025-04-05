@@ -1,6 +1,6 @@
 'use server'
 
-import { BaseAction, HttpResponse } from '@/shared/lib/api'
+import { BaseAction, HttpResponse } from '@shared/lib/api'
 import type {
   GetAccount,
   LoginAccountResponse,

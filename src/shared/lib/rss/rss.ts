@@ -1,4 +1,4 @@
-import { siteConfig } from '@/shared/config/site.config'
+import { siteConfig } from '@shared/config/site.config'
 import { Feed } from 'feed'
 import fs from 'fs'
 import path from 'path'

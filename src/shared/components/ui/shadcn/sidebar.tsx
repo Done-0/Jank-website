@@ -1,18 +1,18 @@
 'use client'
 
-import { Button } from '@/shared/components/ui/shadcn/button'
-import { Input } from '@/shared/components/ui/shadcn/input'
-import { Separator } from '@/shared/components/ui/shadcn/separator'
-import { Sheet, SheetContent } from '@/shared/components/ui/shadcn/sheet'
-import { Skeleton } from '@/shared/components/ui/shadcn/skeleton'
+import { Button } from '@shared/components/ui/shadcn/button'
+import { Input } from '@shared/components/ui/shadcn/input'
+import { Separator } from '@shared/components/ui/shadcn/separator'
+import { Sheet, SheetContent } from '@shared/components/ui/shadcn/sheet'
+import { Skeleton } from '@shared/components/ui/shadcn/skeleton'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
-} from '@/shared/components/ui/shadcn/tooltip'
-import { useIsMobile } from '@/shared/hooks/use-mobile'
-import { cn } from '@/shared/lib/utils'
+} from '@shared/components/ui/shadcn/tooltip'
+import { useIsMobile } from '@shared/hooks/use-mobile'
+import { cn } from '@shared/lib/utils'
 import { Slot } from '@radix-ui/react-slot'
 import { cva, VariantProps } from 'class-variance-authority'
 import { PanelLeft } from 'lucide-react'

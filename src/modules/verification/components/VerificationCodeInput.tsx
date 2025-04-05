@@ -1,14 +1,14 @@
 'use client'
 
-import { Button } from '@/shared/components/ui/shadcn/button'
+import { Button } from '@shared/components/ui/shadcn/button'
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
-} from '@/shared/components/ui/shadcn/form'
-import { Input } from '@/shared/components/ui/shadcn/input'
+} from '@shared/components/ui/shadcn/form'
+import { Input } from '@shared/components/ui/shadcn/input'
 import { Key, Shield } from 'lucide-react'
 import Image from 'next/image'
 import { Control } from 'react-hook-form'

@@ -3,7 +3,7 @@
 import { usePostList } from '@/modules/post/hooks/usePostList'
 import { PostList } from '@/modules/post/components/PostList'
 import { AlertCircle } from 'lucide-react'
-import Loading from '@/shared/components/custom/Loading'
+import Loading from '@shared/components/custom/Loading'
 import { useState, useEffect } from 'react'
 
 export default function PostsPage() {

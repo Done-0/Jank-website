@@ -7,12 +7,11 @@
 import type { Config } from 'tailwindcss'
 
 import typography from '@tailwindcss/typography'
-import animate from 'tailwindcss-animate'
 
 const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
-  plugins: [typography, animate]
+  plugins: [typography]
 }
 
 export default config

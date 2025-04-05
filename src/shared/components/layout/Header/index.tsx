@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
-import { seoConfig } from '@/shared/config/seo.config'
-import { siteConfig } from '@/shared/config/site.config'
+import { seoConfig } from '@shared/config/seo.config'
+import { siteConfig } from '@shared/config/site.config'
 
 // SEO通用配置参数
 export interface SeoProps {

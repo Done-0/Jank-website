@@ -1,8 +1,8 @@
 import {
   ButtonProps,
   buttonVariants
-} from '@/shared/components/ui/shadcn/button'
-import { cn } from '@/shared/lib/utils'
+} from '@shared/components/ui/shadcn/button'
+import { cn } from '@shared/lib/utils'
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
 import * as React from 'react'
 

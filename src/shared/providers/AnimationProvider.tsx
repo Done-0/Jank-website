@@ -1,6 +1,6 @@
 'use client'
 
-import { AnimationProvider as LibAnimationProvider } from '@/shared/lib/animations'
+import { AnimationProvider as LibAnimationProvider } from '@shared/lib/animations'
 import React from 'react'
 
 /**

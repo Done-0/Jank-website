@@ -1,4 +1,4 @@
-import { BaseService, HttpResponse, HttpError } from '@/shared/lib/api'
+import { BaseService, HttpResponse, HttpError } from '@shared/lib/api'
 
 /**
  * 验证服务

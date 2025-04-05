@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useMemo, useEffect, useRef, memo, useState } from 'react'
-import { Card, CardContent } from '@/shared/components/ui/shadcn/card'
+import { Card, CardContent } from '@shared/components/ui/shadcn/card'
 import { PaginationComponent } from './Pagination'
 import { useRouter } from 'next/navigation'
 import { Post } from '../types/Post'
-import { truncateText } from '@/shared/lib/utils/format'
+import { truncateText } from '@shared/lib/utils/format'
 import Image from 'next/image'
 
 type PostListProps = {

@@ -1,5 +1,5 @@
-import { SEOConfig } from '@/shared/types/SEO'
-import { siteConfig } from '@/shared/config/site.config'
+import { SEOConfig } from '@shared/types/SEO'
+import { siteConfig } from '@shared/config/site.config'
 
 // Favicon SVG的Base64编码，使用固定字符串而不是运行时生成，确保服务器端和客户端一致
 const FAVICON_SVG_DATA_URL =
