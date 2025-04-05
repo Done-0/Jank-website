@@ -46,7 +46,7 @@ export function VerificationCodeInput({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel className='text-sm sm:text-base font-medium'>
+          <FormLabel className='text-xs sm:text-sm font-medium text-muted-foreground'>
             {label}
           </FormLabel>
           <div className='flex gap-1 sm:gap-2'>
@@ -71,8 +71,9 @@ export function VerificationCodeInput({
                     className='w-full h-full object-cover'
                     height={44}
                     src={imgCode}
-                    unoptimized
                     width={112}
+                    priority={true}
+                    quality={90}
                   />
                 ) : (
                   <Button

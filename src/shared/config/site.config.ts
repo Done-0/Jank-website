@@ -59,10 +59,11 @@ export const siteConfig: SiteConfig = {
 
   // API配置
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || '',
-    timeout: 5000,
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:9010/api',
+    timeout: 10000,
     retries: 3,
-    caching: true
+    caching: true,
+    enableLogging: process.env.NEXT_PUBLIC_ENV !== 'production'
   },
 
   // 备案信息

@@ -64,7 +64,6 @@ src/
 │
 ├── modules/                    # 业务模块 (按领域划分)
 │   ├── account/                # 账户模块
-│   │   ├── api/                # API 请求
 │   │   ├── services/           # 业务逻辑服务
 │   │   ├── actions/            # 服务端操作函数
 │   │   ├── components/         # 模块专用组件
@@ -111,7 +110,8 @@ src/
     修改 `.env` 或 `.env.development` 文件中的数据库配置和邮箱配置，示例如下：
 
    ```yaml
-   NEXT_PUBLIC_SITE_URL=http://127.0.0.1:9010
+   NEXT_PUBLIC_ENV=development
+   NEXT_PUBLIC_API_URL=http://127.0.0.1:9010
    ```
 
 3. **启动服务**：  

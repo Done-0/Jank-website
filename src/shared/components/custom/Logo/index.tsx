@@ -19,7 +19,7 @@ interface LogoProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-// Jank Logo SVG组件 - 基础SVG渲染
+// Jank Logo SVG组件
 const JankLogoSVG = memo(
   ({
     width = 100,
@@ -72,6 +72,8 @@ const JankLogoSVG = memo(
         height={height}
         viewBox='0 0 100 100'
         className={className}
+        role='img'
+        aria-label={`${siteConfig.name} logo`}
       >
         <SVGGradients gradients={gradients} />
         <g transform='translate(16, 7.5)'>
@@ -117,7 +119,11 @@ const Logo = memo(({ className, showText = true, size = 'md' }: LogoProps) => {
   )
 
   return (
-    <Link href='/' className={cn('flex items-center gap-2', className)}>
+    <Link
+      href='/'
+      className={cn('flex items-center gap-2', className)}
+      aria-label={`${siteConfig.name} 首页`}
+    >
       <JankLogoSVG
         width={staticLogoDimensions.width}
         height={staticLogoDimensions.height}

@@ -38,12 +38,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     resolver: zodResolver(registerValidator)
   })
 
-  // 获取图形验证码
   const fetchImgVerificationCode = useCallback(
     async (email: string) => {
       if (verificationCooldown > 0) return
 
-      // 验证邮箱
       const emailError = await form.trigger('email')
       if (!emailError) {
         toast.error('请输入正确的邮箱地址')
@@ -62,7 +60,6 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     [verificationCooldown, form]
   )
 
-  // 倒计时处理
   useEffect(() => {
     let timer: NodeJS.Timeout
     if (verificationCooldown > 0) {
@@ -71,9 +68,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
     return () => clearTimeout(timer)
   }, [verificationCooldown])
 
-  // 发送邮箱验证码
   const handleSendEmailCode = useCallback(async () => {
-    // 验证邮箱
     const emailError = await form.trigger('email')
     if (!emailError) {
       toast.error('请输入正确的邮箱地址')
@@ -90,7 +85,7 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
 
   return (
     <Form {...form}>
-      <form className='space-y-4' onSubmit={form.handleSubmit(handleRegister)}>
+      <form className='space-y-5' onSubmit={form.handleSubmit(handleRegister)}>
         <div className='grid gap-4'>
           <FormInput
             control={form.control}
@@ -139,14 +134,18 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
           />
         </div>
 
-        <Button className='w-full' disabled={isLoading} type='submit'>
+        <Button
+          className='w-full h-11 bg-[hsl(var(--foreground))] text-[hsl(var(--background))] rounded-full shadow-sm hover:bg-[hsl(var(--foreground)/0.9)] border-0'
+          disabled={isLoading}
+          type='submit'
+        >
           {isLoading ? '注册中...' : '注册'}
         </Button>
 
-        <div className='mt-4 text-center text-sm text-muted-foreground'>
-          已有账号？{' '}
+        <div className='mt-4 text-center text-sm'>
+          <span className='text-muted-foreground'>已有账号？</span>{' '}
           <Button
-            className='h-auto p-0 text-sm font-medium'
+            className='h-auto p-0 text-sm font-medium text-primary dark:text-primary'
             onClick={onSwitchToLogin}
             type='button'
             variant='link'

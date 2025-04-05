@@ -47,7 +47,12 @@ const MobileNav = () => {
   return (
     <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>
-        <Button className={iconButtonStyles} size='icon' variant='ghost'>
+        <Button
+          className={iconButtonStyles}
+          size='icon'
+          variant='ghost'
+          aria-label='打开导航菜单'
+        >
           <Menu className={iconStyles} />
           <span className='sr-only'>打开菜单</span>
         </Button>
@@ -76,6 +81,7 @@ const MobileNav = () => {
               className={`flex items-center py-2 text-base ${linkBaseStyles} ${linkInactiveStyles}`}
               href='/login'
               onClick={() => setOpen(false)}
+              aria-label='登录账户'
             >
               登录
             </Link>
@@ -95,6 +101,8 @@ const MobileNav = () => {
                   href={item.link}
                   key={item.key}
                   onClick={() => setOpen(false)}
+                  aria-current={isActive ? 'page' : undefined}
+                  aria-label={`导航到${item.title}`}
                 >
                   {item.title}
                 </Link>
@@ -136,6 +144,8 @@ export const Navbar = ({ className }: NavbarProps) => {
                 )}
                 href={item.link}
                 key={item.key}
+                aria-current={pathname === item.link ? 'page' : undefined}
+                aria-label={`导航到${item.title}`}
               >
                 {item.title}
               </Link>
@@ -147,8 +157,13 @@ export const Navbar = ({ className }: NavbarProps) => {
         <div className='flex items-center gap-4'>
           <div className='hidden md:flex items-center gap-4'>
             <ThemeToggle className={iconButtonStyles} />
-            <Link href='/login'>
-              <Button className={iconButtonStyles} size='icon' variant='ghost'>
+            <Link href='/login' aria-label='登录账户'>
+              <Button
+                className={iconButtonStyles}
+                size='icon'
+                variant='ghost'
+                aria-label='用户登录'
+              >
                 <User className={iconStyles} />
                 <span className='sr-only'>登录</span>
               </Button>

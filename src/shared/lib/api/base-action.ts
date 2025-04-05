@@ -1,9 +1,8 @@
 /**
- * Action基类
- * 提供通用的服务端Action方法
+ * API基础Action类模块
  */
-
-import { createSuccess, createError, ActionResponse } from './response-handler'
+import { ActionResponse } from './types'
+import { createSuccess, createError } from './response'
 
 /**
  * 基础Action类
@@ -11,7 +10,7 @@ import { createSuccess, createError, ActionResponse } from './response-handler'
  */
 export class BaseAction {
   /**
-   * 执行服务操作并统一处理响应和错误
+   * 执行服务调用并处理响应
    */
   protected async execute<T>(
     serviceCall: () => Promise<{ data: T }>,
@@ -27,7 +26,7 @@ export class BaseAction {
   }
 
   /**
-   * 获取数据列表
+   * 获取列表数据
    */
   protected async getList<T, P = any>(
     serviceCall: (params: P) => Promise<{ data: T }>,
@@ -39,7 +38,7 @@ export class BaseAction {
   }
 
   /**
-   * 获取单条数据
+   * 获取详情数据
    */
   protected async getDetail<T, P = any>(
     serviceCall: (params: P) => Promise<{ data: T }>,

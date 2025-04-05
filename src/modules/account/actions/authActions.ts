@@ -1,12 +1,11 @@
 'use server'
 
-import { BaseAction } from '@/shared/lib/api/base-action'
+import { BaseAction, HttpResponse } from '@/shared/lib/api'
 import type {
   GetAccount,
   LoginAccountResponse,
   RegisterAccountResponse
 } from '../types/Account'
-import { HttpResponse } from '@/shared/lib/api/http'
 import {
   LoginFormValues,
   RegisterFormValues,

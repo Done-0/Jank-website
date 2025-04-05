@@ -1,166 +1,158 @@
 /**
  * HTTP客户端模块
- * 提供统一的HTTP请求接口和类型定义
  */
-import { siteConfig } from '@/shared/config/site.config'
+import { HttpRequestOptions, HttpResponse, HttpError } from './types'
+import { CONFIG, logger } from './config'
+
+// 重新导出类型
+export type { HttpRequestOptions, HttpResponse, HttpError }
 
 /**
- * HTTP请求配置接口
- */
-export interface HttpRequestOptions {
-  data?: any
-  headers?: Record<string, string>
-  method?: 'DELETE' | 'GET' | 'POST' | 'PUT'
-  params?: Record<string, any>
-  timeout?: number
-  withToken?: boolean
-  signal?: AbortSignal
-}
-
-/**
- * HTTP响应接口
- */
-export interface HttpResponse<T = any> {
-  code?: number
-  data: T
-  msg?: string
-  requestId: string
-  timeStamp: number
-}
-
-/**
- * 基础配置
- */
-const CONFIG = {
-  baseURL: siteConfig?.api?.baseUrl,
-  headers: { 'Content-Type': 'application/json' },
-  timeout: siteConfig?.api?.timeout
-}
-
-/**
- * 构建完整的请求URL，处理查询参数
+ * 构建请求URL
  */
 function buildUrl(api: string, params?: Record<string, any>): string {
-  if (!params) return `${CONFIG.baseURL}${api}`
+  let baseUrl = CONFIG.baseURL || '';
+  if (baseUrl.includes('localhost') || baseUrl.includes('127.0.0.1'))
+    baseUrl = baseUrl.replace('https://', 'http://');
+
+  const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  const path = api.startsWith('/') ? api : `/${api}`;
+  const url = `${base}${path}`;
+
+  if (!params || Object.keys(params).length === 0) return url;
 
   const query = Object.entries(params)
     .filter(([_, v]) => v != null)
-    .map(([k, v]) => {
-      const val = Array.isArray(v)
-        ? v.map(encodeURIComponent).join(',')
-        : encodeURIComponent(String(v))
-      return `${encodeURIComponent(k)}=${val}`
-    })
-    .join('&')
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+    .join('&');
 
-  return query ? `${CONFIG.baseURL}${api}?${query}` : `${CONFIG.baseURL}${api}`
+  return query ? `${url}${url.includes('?') ? '&' : '?'}${query}` : url;
+}
+
+/**
+ * 创建HTTP错误
+ */
+function createHttpError(status: number, message: string, data: any = null, url: string = ''): HttpError {
+  return {
+    code: status,
+    msg: message,
+    data,
+    url,
+    timeStamp: Date.now(),
+    requestId: ''
+  };
+}
+
+/**
+ * 标准化响应格式
+ */
+function normalizeResponse<T>(result: any, defaultValue: T): HttpResponse<T> {
+  return {
+    code: result?.code || 200,
+    msg: result?.msg || 'success',
+    data: result?.data ?? defaultValue,
+    requestId: result?.requestId || `req-${Date.now()}`,
+    timeStamp: result?.timeStamp || Date.now()
+  };
 }
 
 /**
  * 核心请求函数
  */
-async function request<T = any>(
-  api: string,
-  options: HttpRequestOptions = {}
-): Promise<HttpResponse<T>> {
+async function request<T = any>(api: string, options: HttpRequestOptions = {}): Promise<HttpResponse<T>> {
   const {
     data,
     headers = {},
     method = 'GET',
     params,
     timeout = CONFIG.timeout,
-    signal
-  } = options
+    signal,
+    silent = false
+  } = options;
 
-  // 超时控制
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), timeout)
+  const url = buildUrl(api, params);
+  if (!silent) logger.log(`${method} ${url}`, { params, data });
 
-  // 合并信号
-  const reqSignal = signal
-    ? (() => {
-        const ctrl = new AbortController()
-        ;[signal, controller.signal].forEach(s => {
-          if (s.aborted) return ctrl.abort(s.reason)
-          s.addEventListener('abort', () => ctrl.abort(s.reason), {
-            once: true
-          })
-        })
-        return ctrl.signal
-      })()
-    : controller.signal
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort('请求超时'), timeout);
+  const combinedSignal = signal
+    ? Object.assign(controller.signal, { addEventListener: signal.addEventListener })
+    : controller.signal;
 
   try {
-    const response = await fetch(buildUrl(api, params), {
+    const response = await fetch(url, {
       method,
-      headers: new Headers({ ...CONFIG.headers, ...headers }),
+      headers: { ...CONFIG.headers, ...headers },
       body: data && method !== 'GET' ? JSON.stringify(data) : undefined,
-      signal: reqSignal
-    })
+      signal: combinedSignal
+    });
+    clearTimeout(timeoutId);
 
-    clearTimeout(timeoutId)
-
-    // 处理响应
-    const result = await response.json().catch(() => ({
-      code: response.status,
-      msg: '无效的响应格式',
-      data: null
-    }))
-
-    if (response.ok) return result
-
-    throw { ...result, status: response.status, url: api }
-  } catch (error: any) {
-    clearTimeout(timeoutId)
-
-    // 标准化错误
-    if (error.name === 'AbortError') {
-      throw {
-        code: 408,
-        msg: '请求超时',
-        data: null,
-        timeStamp: Date.now(),
-        requestId: ''
-      }
+    if (!response.ok) {
+      const error = createHttpError(
+        response.status,
+        response.statusText || '请求失败',
+        null,
+        url
+      );
+      if (!silent) logger.error(`${method} ${url} 失败: ${error.msg}`, error);
+      throw error;
     }
 
-    throw error.code
-      ? error
-      : {
-          code: 500,
-          msg: error.message || '网络请求失败',
-          data: null,
-          timeStamp: Date.now(),
-          requestId: ''
-        }
+    const contentType = response.headers.get('content-type');
+    let result: any;
+
+    // 处理JSON响应
+    if (contentType?.includes('application/json')) {
+      try {
+        result = await response.json();
+      } catch (e) {
+        result = { code: 200, msg: '解析JSON失败', data: null };
+      }
+      // 标准化响应格式
+      result = normalizeResponse(result, null as T);
+    }
+    // 处理非JSON响应
+    else {
+      const textData = await response.text();
+      result = normalizeResponse({ data: textData }, textData as unknown as T);
+    }
+
+    // 检查业务错误
+    if (!silent && result.code !== 200)
+      logger.error(`${method} ${url} 业务错误: ${result.msg || '未知错误'}`, result);
+
+    return result;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+
+    let httpError: HttpError;
+    if (error.name === 'AbortError')
+      httpError = createHttpError(408, '请求超时', null, url);
+    else if (error instanceof TypeError && error.message.includes('NetworkError'))
+      httpError = createHttpError(503, '网络连接失败', null, url);
+    else if (error.code && error.msg)
+      httpError = error;
+    else
+      httpError = createHttpError(500, error.message || '网络请求失败', null, url);
+
+    if (!silent) logger.error(`${method} ${url} 异常: ${httpError.msg}`, httpError);
+    throw httpError;
   }
 }
 
 /**
- * HTTP请求方法
+ * HTTP客户端
  */
 export const http = {
   delete: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
     request<T>(api, { data, method: 'DELETE', ...options }),
-
-  get: <T = any>(
-    api: string,
-    params?: Record<string, any>,
-    options?: HttpRequestOptions
-  ) => request<T>(api, { params, method: 'GET', ...options }),
-
+  get: <T = any>(api: string, params?: Record<string, any>, options?: HttpRequestOptions) =>
+    request<T>(api, { params, method: 'GET', ...options }),
   post: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
     request<T>(api, { data, method: 'POST', ...options }),
-
   put: <T = any>(api: string, data?: any, options?: HttpRequestOptions) =>
     request<T>(api, { data, method: 'PUT', ...options })
-}
+};
 
-export const serverHttp = http
-
-export const {
-  get: httpGet,
-  post: httpPost,
-  put: httpPut,
-  delete: httpDelete
-} = http
+export const serverHttp = http;

@@ -57,6 +57,7 @@ declare interface SiteConfig {
         timeout?: number;             // 请求超时时间
         retries?: number;             // 请求重试次数
         caching?: boolean;            // API响应缓存
+        enableLogging?: boolean;      // 是否启用API日志
     };
 
     // 备案信息

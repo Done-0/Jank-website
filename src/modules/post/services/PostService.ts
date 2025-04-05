@@ -1,10 +1,4 @@
-/**
- * 文章服务类
- * 负责文章相关的API通信
- */
-
-import { BaseService } from '@/shared/lib/api/base-service'
-import { HttpResponse } from '@/shared/lib/api'
+import { BaseService, HttpResponse } from '@/shared/lib/api'
 import {
   CreatePostRequest,
   DeletePostRequest,
@@ -23,7 +17,9 @@ export class PostService extends BaseService {
   constructor() {
     super({
       baseUrl: '/v1/post',
-      useClientApi: false // 使用服务端API
+      useClientApi: false,
+      serviceName: 'PostService',
+      silent: false
     })
   }
 

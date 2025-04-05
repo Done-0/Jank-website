@@ -6,6 +6,7 @@ import { PaginationComponent } from './Pagination'
 import { useRouter } from 'next/navigation'
 import { Post } from '../types/Post'
 import { truncateText } from '@/shared/lib/utils/format'
+import Image from 'next/image'
 
 type PostListProps = {
   posts: Post[]
@@ -25,11 +26,14 @@ const PostItem = memo(({ post, index, setRef, onClick, extractText }: any) => (
   >
     <div className='group flex h-full overflow-hidden rounded-xl border hover:shadow-xl'>
       <div className='relative w-1/3 overflow-hidden'>
-        <img
+        <Image
           src={post.image}
           alt={post.title}
-          className='w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105'
+          className='object-cover transition-transform duration-500 ease-out group-hover:scale-105'
+          fill
+          sizes='(max-width: 768px) 33vw, 25vw'
           loading='lazy'
+          quality={80}
         />
       </div>
       <div className='h-full w-2/3 border-l'>
