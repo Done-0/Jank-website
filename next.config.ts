@@ -7,7 +7,6 @@ import type { NextConfig } from 'next'
 
 // 环境配置
 const isProd = process.env.NEXT_PUBLIC_ENV === 'production'
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://127.0.0.1:9010/api'
 const securityHeaders = [
   {
     source: '/:path*',
@@ -26,19 +25,11 @@ const baseConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   poweredByHeader: false,
   reactStrictMode: true,
+  output: 'standalone',
   images: {
     formats: ['image/webp'],
     remotePatterns: [{ protocol: 'https', hostname: '**' }]
   } as any,
-  rewrites: async () =>
-    apiUrl
-      ? [
-        {
-          source: '/api/:path*',
-          destination: `${apiUrl}/:path*`
-        }
-      ]
-      : [],
   headers: async () => securityHeaders
 }
 
@@ -46,14 +37,15 @@ const baseConfig: NextConfig = {
 const prodExtend = isProd
   ? {
     compiler: { removeConsole: { exclude: ['error', 'warn'] } },
-    webpack: (cfg: any) => ({
-      ...cfg,
-      optimization: {
-        ...cfg.optimization,
-        minimize: true,
-        splitChunks: { chunks: 'all' }
+    webpack: (config: any, { dev, isServer }: any) => {
+      if (!dev && !isServer) {
+        config.optimization.minimize = true;
+        config.optimization.splitChunks = {
+          chunks: 'all'
+        };
       }
-    }),
+      return config;
+    },
     headers: async () => [
       ...securityHeaders,
       {

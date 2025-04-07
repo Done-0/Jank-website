@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { MainFooter } from '@shared/components/layout/Footer'
 import { cn } from '@shared/lib/utils'
 import { Providers } from '@shared/providers'
@@ -15,15 +16,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='zh-CN' suppressHydrationWarning>
-      <body className={cn('min-h-screen bg-background', inter.className)}>
-        <Providers>
-          <div className='flex min-h-screen flex-col md:px-[12.6%]'>
-            <main className='flex-1'>{children}</main>
-            <MainFooter />
-          </div>
-        </Providers>
-      </body>
-    </html>
+    <Suspense>
+      <html lang='zh-CN' suppressHydrationWarning>
+        <body className={cn('min-h-screen bg-background', inter.className)}>
+            <Providers>
+            <div className='flex min-h-screen flex-col md:px-[12.6%]'>
+                <main className='flex-1'>
+                    {children}
+                </main>
+                <MainFooter />
+            </div>
+            </Providers>
+        </body>
+      </html>
+    </Suspense>
   )
 }

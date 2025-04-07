@@ -148,7 +148,7 @@ export default function PostDetailPage() {
     : null
 
   return (
-    <div className='container mx-auto px-4 sm:px-6' ref={pageRef}>
+    <div className='container mx-auto pt-4 px-4 sm:px-6' ref={pageRef}>
       <div className='relative mb-6'>
         <div className='w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-t-lg relative'>
           <Image

@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Navbar } from '@shared/components/custom/Navbar'
 import { ReactNode } from 'react'
 
@@ -9,7 +10,7 @@ export default function PortalLayout({ children }: PortalLayoutProps) {
   return (
     <>
       <Navbar />
-      <div>{children}</div>
+      <main>{children}</main>
     </>
   )
 }
