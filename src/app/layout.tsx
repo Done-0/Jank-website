@@ -1,7 +1,8 @@
-import { Suspense } from "react"
+import { Suspense } from 'react'
 import { MainFooter } from '@shared/components/layout/Footer'
 import { cn } from '@shared/lib/utils'
 import { Providers } from '@shared/providers'
+import { GoogleAnalytics } from '@/shared/components/custom/Analytics'
 import '@shared/styles/globals.css'
 import { Inter } from 'next/font/google'
 import { metadata as seoMetadata } from '@shared/components/layout/Header'
@@ -18,15 +19,16 @@ export default function RootLayout({
   return (
     <Suspense>
       <html lang='zh-CN' suppressHydrationWarning>
+        <head>
+          <GoogleAnalytics />
+        </head>
         <body className={cn('min-h-screen bg-background', inter.className)}>
-            <Providers>
+          <Providers>
             <div className='flex min-h-screen flex-col md:px-[12.6%]'>
-                <main className='flex-1'>
-                    {children}
-                </main>
-                <MainFooter />
+              <main className='flex-1'>{children}</main>
+              <MainFooter />
             </div>
-            </Providers>
+          </Providers>
         </body>
       </html>
     </Suspense>

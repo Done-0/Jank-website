@@ -93,7 +93,7 @@ const LoadingSVG = memo(
               attributeName='width'
               values='0;30;30;0'
               keyTimes='0;0.2;0.4;1'
-              dur='0.08s'
+              dur='0.8s'
               repeatCount='indefinite'
             />
           </SVGRect>
@@ -109,7 +109,7 @@ const LoadingSVG = memo(
               attributeName='width'
               values='0;28;28;0'
               keyTimes='0;0.2;0.4;1'
-              dur='0.08s'
+              dur='0.8s'
               repeatCount='indefinite'
             />
           </SVGRect>

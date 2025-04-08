@@ -47,7 +47,7 @@ export default function PostsPage() {
   }
 
   return (
-    <main className='container mx-auto pt-4 sm:px-6 scroll-animate'>
+    <main className='container mx-auto p-4 sm:p-4 scroll-animate'>
       <div className='pb-6'>
         <PostList
           posts={posts || []}
