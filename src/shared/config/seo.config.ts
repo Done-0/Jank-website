@@ -1,12 +1,12 @@
 import { SEOConfig } from '@shared/types/SEO'
 import { siteConfig } from '@shared/config/site.config'
 
-// Favicon SVG的Base64编码，使用固定字符串而不是运行时生成，确保服务器端和客户端一致
+// Favicon SVG 的 Base64 编码，使用固定字符串而非运行时生成，确保服务器端和客户端一致
 const FAVICON_SVG_DATA_URL =
   'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0icHJpbWFyeSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM2RjFDRCIgLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzEzQzJDMiIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxNjc3RkYiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9InNlY29uZGFyeSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjRENEYiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRjc1OUFCIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2LCA3LjUpIj48cGF0aCBkPSJNMCwwIEw1NSwwIEM2MiwwIDY4LDYgNjgsMTMgTDY4LDU1IEM2OCw3MiA1NSw4NSAzOCw4NSBMMCw4NSBMMCw2OCBMMzMsNjggQzQwLDY4IDQ1LDYzIDQ1LDU2IEw0NSwyMiBMMCwyMiBaIiBmaWxsPSJ1cmwoI3ByaW1hcnkpIiAvPjxyZWN0IHg9IjE1IiB5PSIzMiIgd2lkdGg9IjM1IiBoZWlnaHQ9IjciIHJ4PSIzLjUiIGZpbGw9InVybCgjc2Vjb25kYXJ5KSIgLz48cmVjdCB4PSIxNSIgeT0iNDYiIHdpZHRoPSIyMiIgaGVpZ2h0PSI3IiByeD0iMy41IiBmaWxsPSJ1cmwoI3NlY29uZGFyeSkiIC8+PC9nPjwvc3ZnPg=='
 
 /**
- * SEO优化配置
+ * SEO 优化配置
  */
 export const seoConfig: SEOConfig = {
   // 基础元数据
@@ -15,12 +15,15 @@ export const seoConfig: SEOConfig = {
     titleTemplate: `%s | ${siteConfig.name}`,
     description: siteConfig.description,
     keywords: [
-      'Jank博客系统',
-      'Next.js',
-      'React',
-      'TypeScript',
-      '内容管理系统',
-      '高性能'
+      'Jank',
+      'Jank 博客系统',
+      'Go 语言博客',
+      '轻量级博客平台',
+      '高性能博客系统',
+      'Go 语言教程',
+      '在线 Go 课程',
+      '程序员社区',
+      'WordPress 替代方案'
     ],
     canonical: siteConfig.url,
     author: siteConfig.author.name,

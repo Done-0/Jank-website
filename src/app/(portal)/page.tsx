@@ -183,6 +183,22 @@ export default function Home() {
   )
   const goToPosts = useCallback(() => (window.location.href = '/posts'), [])
 
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    abortControllerRef.current = new AbortController()
+
+    return () => {
+      abortControllerRef.current?.abort()
+      abortControllerRef.current = null
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
+    }
+  }, [])
+
   return (
     <div className='min-h-screen bg-background'>
       {/* Hero Section */}

@@ -15,7 +15,7 @@ export const siteConfig: SiteConfig = {
   // 核心站点标识
   name: 'Jank',
   description:
-    '一款极简、低耦合且高扩展的博客系统，基于 Go 语言开发，后端内存占用仅 13 MB。',
+    'Jank 是一款基于 Go 语言开发的高性能、轻量级博客系统，内存占用仅 13MB。提供完整的 Go 语言教程与在线课程，助力开发者提升技能，旨在构建程序员社区。',
   url: 'https://jank.org.cn',
   language: 'zh-CN',
   copyright: `© ${new Date().getFullYear()} Jank 博客系统. All rights reserved.`,

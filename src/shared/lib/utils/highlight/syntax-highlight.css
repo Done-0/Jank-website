@@ -1,200 +1,81 @@
-/**
- * 代码高亮与内容样式
- */
-
-/* 代码块基础样式 */
-.hljs-content pre {
-  position: relative;
-  margin-bottom: 1.25em;
-  border-radius: 8px;
-  padding: 0;
-  overflow: hidden;
+/* 语法高亮 */
+.hljs-keyword, 
+.hljs-built_in,
+.hljs-type,
+.hljs-literal,
+.hljs-symbol {
+  color: hsl(var(--primary));
 }
 
-/* 代码块主题样式 */
-html.light .hljs-content pre {
-  background-color: #f8f9fa !important;
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+.hljs-string,
+.hljs-regexp {
+  color: hsl(130, 60%, 35%);
 }
 
-html.dark .hljs-content pre {
-  background-color: #1c1c1c !important;
-  border: 1px solid #444 !important;
+.hljs-number {
+  color: hsl(22, 80%, 45%);
 }
 
-/* 代码块内的code标签样式 */
-.hljs-content pre code {
-  display: block;
-  padding: 1rem !important;
-  margin: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  overflow-x: auto;
-  background: transparent !important;
-  border-radius: 0 !important;
-  color: inherit !important;
-  white-space: pre !important;
+.hljs-function,
+.hljs-title,
+.hljs-section {
+  color: hsl(280, 60%, 45%);
 }
 
-/* 内联代码样式 - 只应用于非代码块内的code标签 */
-.article-content code:not(pre code),
-.hljs-content code:not(pre code),
-:where(p, li, td, h1, h2, h3, h4, h5, h6) > code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.85em;
-  font-weight: normal;
-  padding: 0.2em 0.4em;
-  margin: 0 0.1em;
-  border-radius: 4px;
-  white-space: nowrap;
-  background-color: #2a2b2d;
-  color: #e6e6e6;
+.hljs-class,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-name {
+  color: hsl(22, 80%, 45%);
 }
 
-/* 引用块样式 */
-.hljs-content blockquote,
-.article-content blockquote,
-blockquote.styled-quote,
-blockquote {
-  position: relative;
-  border-left: 2px solid rgba(128, 128, 128, 0.2);
-  margin: 0.5rem 0;
-  padding: 0 0 0 1.2rem;
-  background-color: transparent;
-  color: var(--foreground, inherit);
-  font-style: italic;
-  border-radius: 0;
+.hljs-comment,
+.hljs-meta {
+  color: hsl(var(--muted-foreground));
 }
 
-/* 引用内容样式 */
-.hljs-content blockquote p,
-.article-content blockquote p,
-blockquote.styled-quote p,
-blockquote p {
-  margin: 0.25rem 0;
-  color: var(--foreground, inherit);
-  line-height: 1.6;
-  font-style: italic;
+.hljs-selector-tag,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-tag {
+  color: hsl(220, 70%, 50%);
 }
 
-/* 暗色模式引用块 */
-html.dark .hljs-content blockquote,
-html.dark .article-content blockquote,
-html.dark blockquote.styled-quote,
-html.dark blockquote {
-  border-left-color: rgba(200, 200, 200, 0.2);
+.hljs-punctuation,
+.hljs-operator,
+.hljs-bracket {
+  color: hsl(var(--foreground));
 }
 
-/* 嵌套引用样式 */
-blockquote blockquote {
-  border-left-color: var(--primary, #3b82f6);
-  margin-left: 0.5rem;
-  margin-right: 0;
-  background-color: rgba(var(--primary-rgb, 59, 130, 246), 0.05);
+.hljs-attr {
+  color: hsl(280, 60%, 45%);
 }
 
-/* 引用中的链接 */
-blockquote a {
-  color: var(--primary, #3b82f6);
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  text-underline-offset: 0.15em;
-}
+/* 暗色模式调整 */
+.dark {
+  .hljs-string,
+  .hljs-regexp {
+    color: hsl(130, 60%, 65%);
+  }
 
-/* 语法高亮 - 亮色模式 */
-html.light .hljs-keyword,
-html.light .hljs-built_in,
-html.light .hljs-type,
-html.light .hljs-literal,
-html.light .hljs-symbol,
-html.light .hljs-attribute {
-  color: #0550ae !important;
-}
+  .hljs-number {
+    color: hsl(22, 80%, 65%);
+  }
 
-html.light .hljs-string,
-html.light .hljs-regexp {
-  color: #0a3069 !important;
-}
+  .hljs-function,
+  .hljs-title,
+  .hljs-section {
+    color: hsl(280, 60%, 75%);
+  }
 
-html.light .hljs-number {
-  color: #116329 !important;
-}
+  .hljs-class,
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-name {
+    color: hsl(40, 80%, 65%);
+  }
 
-html.light .hljs-function,
-html.light .hljs-title,
-html.light .hljs-section {
-  color: #8250df !important;
-}
-
-html.light .hljs-class,
-html.light .hljs-variable,
-html.light .hljs-template-variable,
-html.light .hljs-name {
-  color: #953800 !important;
-}
-
-html.light .hljs-comment,
-html.light .hljs-meta {
-  color: #6e7781 !important;
-}
-
-html.light .hljs-selector-tag {
-  color: #116329 !important;
-}
-
-html.light .hljs-selector-id,
-html.light .hljs-selector-class {
-  color: #0550ae !important;
-}
-
-html.light .hljs-punctuation,
-html.light .hljs-operator,
-html.light .hljs-bracket {
-  color: #333 !important;
-}
-
-/* 语法高亮 - 暗色模式 */
-html.dark .hljs-keyword,
-html.dark .hljs-built_in,
-html.dark .hljs-type,
-html.dark .hljs-literal,
-html.dark .hljs-symbol,
-html.dark .hljs-attribute {
-  color: #93c5fd !important;
-}
-
-html.dark .hljs-string,
-html.dark .hljs-regexp,
-html.dark .hljs-number {
-  color: #c4e3ff !important;
-}
-
-html.dark .hljs-function,
-html.dark .hljs-title,
-html.dark .hljs-section {
-  color: #f472b6 !important;
-}
-
-html.dark .hljs-class,
-html.dark .hljs-variable,
-html.dark .hljs-template-variable {
-  color: #fcd34d !important;
-}
-
-html.dark .hljs-comment,
-html.dark .hljs-meta {
-  color: #cbd5e1 !important;
-}
-
-html.dark .hljs-name,
-html.dark .hljs-doctag {
-  color: #6ee7b7 !important;
-}
-
-html.dark .hljs-punctuation,
-html.dark .hljs-operator,
-html.dark .hljs-tag,
-html.dark .hljs-bracket {
-  color: #ffffff !important;
+  .hljs-attr {
+    color: hsl(280, 60%, 75%);
+  }
 }
