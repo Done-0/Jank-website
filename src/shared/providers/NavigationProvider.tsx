@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useTheme } from 'next-themes'
 
 export function NavigationProvider({
   children
@@ -12,6 +13,7 @@ export function NavigationProvider({
   const path = usePathname()
   const params = useSearchParams()
   const [key, setKey] = useState(0)
+  const { theme, systemTheme } = useTheme()
 
   const state = useRef({
     path: '',
@@ -35,6 +37,13 @@ export function NavigationProvider({
       state.lastTime = now
       state.isPopState = isPopState
 
+      // 在导航前保存当前主题状态
+      const currentTheme = theme === 'system' ? systemTheme : theme
+      if (currentTheme) {
+        document.documentElement.classList.remove('light', 'dark')
+        document.documentElement.classList.add(currentTheme)
+      }
+
       router.refresh()
 
       if (isPopState) {
@@ -53,7 +62,7 @@ export function NavigationProvider({
         }, 80) as any
       }
     },
-    [router, state]
+    [router, state, theme, systemTheme]
   )
 
   // 处理浏览器历史导航
