@@ -36,29 +36,29 @@ const baseConfig: NextConfig = {
 // 生产环境扩展
 const prodExtend = isProd
   ? {
-    compiler: { removeConsole: { exclude: ['error', 'warn'] } },
-    webpack: (config: any, { dev, isServer }: any) => {
-      if (!dev && !isServer) {
-        config.optimization.minimize = true;
-        config.optimization.splitChunks = {
-          chunks: 'all'
-        };
-      }
-      return config;
-    },
-    headers: async () => [
-      ...securityHeaders,
-      {
-        source: '/(.*)\\.(jpg|png|webp|svg|js|css|woff2)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable'
+      compiler: { removeConsole: { exclude: ['error', 'warn'] } },
+      webpack: (config: any, { dev, isServer }: any) => {
+        if (!dev && !isServer) {
+          config.optimization.minimize = true
+          config.optimization.splitChunks = {
+            chunks: 'all'
           }
-        ]
-      }
-    ]
-  }
+        }
+        return config
+      },
+      headers: async () => [
+        ...securityHeaders,
+        {
+          source: '/(.*)\\.(jpg|png|webp|svg|js|css|woff2)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable'
+            }
+          ]
+        }
+      ]
+    }
   : {}
 
 export default { ...baseConfig, ...prodExtend }

@@ -43,16 +43,16 @@ export class CodeHighlighter {
     this.element = element
     this.isFormatted = isFormatted
     this.buttons = buttons
-    this.cleanup = cleanup || (() => { })
+    this.cleanup = cleanup || (() => {})
     this.onHighlightComplete = onHighlightComplete
     this.onInitialHighlightComplete = onInitialHighlightComplete
 
     element.classList.add('hljs-content')
 
     // 预处理代码块基础样式
-    element.querySelectorAll('pre code').forEach(block =>
-      (block as HTMLElement).classList.add('hljs')
-    )
+    element
+      .querySelectorAll('pre code')
+      .forEach(block => (block as HTMLElement).classList.add('hljs'))
   }
 
   // 清理所有高亮标记和按钮
@@ -68,10 +68,12 @@ export class CodeHighlighter {
 
     if (this.element) {
       // 一次性选择所有需要清理的元素
-      this.element.querySelectorAll('pre code[data-highlighted]')
+      this.element
+        .querySelectorAll('pre code[data-highlighted]')
         .forEach(block => block.removeAttribute('data-highlighted'))
 
-      this.element.querySelectorAll('pre[data-button-added]')
+      this.element
+        .querySelectorAll('pre[data-button-added]')
         .forEach(pre => pre.removeAttribute('data-button-added'))
     }
 
@@ -93,7 +95,8 @@ export class CodeHighlighter {
     if (this.highlightedElements.has(element)) return
 
     // 重置高亮状态
-    element.hasAttribute('data-highlighted') && element.removeAttribute('data-highlighted')
+    element.hasAttribute('data-highlighted') &&
+      element.removeAttribute('data-highlighted')
 
     const { createRoot } = await import('react-dom/client')
     const language = hljs.highlightAuto(element.textContent || '').language
@@ -113,7 +116,9 @@ export class CodeHighlighter {
       pre.appendChild(container)
 
       const root = createRoot(container)
-      root.render(React.createElement(CopyButton, { code: element.textContent || '' }))
+      root.render(
+        React.createElement(CopyButton, { code: element.textContent || '' })
+      )
 
       this.buttons.push({ root, container })
       pre.setAttribute('data-button-added', 'true')
@@ -150,7 +155,9 @@ export class CodeHighlighter {
     })
 
     // 立即处理可见代码块
-    await Promise.all(visibleBlocks.map(block => this.processCodeBlock(block, CopyButton)))
+    await Promise.all(
+      visibleBlocks.map(block => this.processCodeBlock(block, CopyButton))
+    )
 
     // 通知初始高亮完成
     if (!this.initialHighlightDone) {
@@ -160,7 +167,7 @@ export class CodeHighlighter {
 
     // 惰性处理视口外代码块
     this.intersectionObserver = new IntersectionObserver(
-      (entries) => {
+      entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const codeBlock = entry.target.querySelector('code') as HTMLElement
@@ -187,7 +194,8 @@ export class CodeHighlighter {
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.bottom <=
+        (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
     )
   }

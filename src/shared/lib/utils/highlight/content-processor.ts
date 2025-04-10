@@ -10,7 +10,7 @@ class LRUCache {
   private cache = new Map<string, string>()
   private keys: string[] = []
 
-  constructor(private maxSize: number) { }
+  constructor(private maxSize: number) {}
 
   get(key: string): string | undefined {
     const value = this.cache.get(key)
@@ -54,17 +54,35 @@ export function processContent(html: string): string {
       return `__CODE_BLOCK_${codeBlocks.length - 1}__`
     })
     .replace(INLINE_CODE_REGEX, '<code>$1</code>')
-    .replace(/(<p>["'""].*?["'""](?:\s*.*?)?<\/p>)\s*(<p>.*?<\/p>)/g,
-      (m, q, n) => n.includes(' said') ? `<blockquote>${q}${n}</blockquote>` : m)
-    .replace(/<p>["'""](.+?)["'""](?:\s*.*?)?<\/p>/g, '<blockquote><p>$1</p></blockquote>')
+    .replace(
+      /(<p>["'""].*?["'""](?:\s*.*?)?<\/p>)\s*(<p>.*?<\/p>)/g,
+      (m, q, n) =>
+        n.includes(' said') ? `<blockquote>${q}${n}</blockquote>` : m
+    )
+    .replace(
+      /<p>["'""](.+?)["'""](?:\s*.*?)?<\/p>/g,
+      '<blockquote><p>$1</p></blockquote>'
+    )
     .replace(/<p>&gt;\s*(.*?)<\/p>/g, '<blockquote><p>$1</p></blockquote>')
-    .replace(/<p>&gt;&gt;\s*(.*?)<\/p>/g, '<blockquote><blockquote><p>$1</p></blockquote></blockquote>')
-    .replace(/(<p>&gt;\s*(.*?)<\/p>)+/g, match =>
-      `<blockquote>${[...match.matchAll(/<p>&gt;\s*(.*?)<\/p>/g)].map(m => `<p>${m[1]}</p>`).join('')}</blockquote>`)
+    .replace(
+      /<p>&gt;&gt;\s*(.*?)<\/p>/g,
+      '<blockquote><blockquote><p>$1</p></blockquote></blockquote>'
+    )
+    .replace(
+      /(<p>&gt;\s*(.*?)<\/p>)+/g,
+      match =>
+        `<blockquote>${[...match.matchAll(/<p>&gt;\s*(.*?)<\/p>/g)].map(m => `<p>${m[1]}</p>`).join('')}</blockquote>`
+    )
     .replace(BLOCKQUOTE_REGEX, (m, c) =>
-      m.includes('class=') ? m : `<blockquote class="styled-quote">${c}</blockquote>`)
+      m.includes('class=')
+        ? m
+        : `<blockquote class="styled-quote">${c}</blockquote>`
+    )
 
-  return processed.replace(/__CODE_BLOCK_(\d+)__/g, (_, i) => codeBlocks[parseInt(i)])
+  return processed.replace(
+    /__CODE_BLOCK_(\d+)__/g,
+    (_, i) => codeBlocks[parseInt(i)]
+  )
 }
 
 /**
