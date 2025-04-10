@@ -6,8 +6,8 @@
  */
 import React, { useEffect, useRef } from 'react'
 
-import { useAnimationSystem } from './animationHooks'
-import { AnimationOptions } from './animationTypes'
+import { useAnimationSystem } from './hooks'
+import { AnimationOptions } from './types'
 
 export interface AnimateProps extends React.HTMLAttributes<HTMLDivElement> {
   /**

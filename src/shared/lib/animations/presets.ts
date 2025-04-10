@@ -2,7 +2,7 @@
  * 动画系统预设配置
  */
 import { siteConfig } from '@shared/config/site.config'
-import { AnimationOptions } from './animationTypes'
+import { AnimationOptions } from './types'
 
 export const ANIMATION_PRESETS: Record<string, AnimationOptions> = {
   balanced: {

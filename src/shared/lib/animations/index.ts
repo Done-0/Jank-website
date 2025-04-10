@@ -18,14 +18,14 @@ export {
   cleanupResources,
   initAnimationSystem,
   resetAnimation
-} from './animationCore'
+} from './core'
 
 // 导出React钩子
-export { useAnimationSystem } from './animationHooks'
+export { useAnimationSystem } from './hooks'
 
 // 导出预设配置
-export { ANIMATION_PRESETS } from './animationPresets'
-export { AnimationProvider, useAnimationContext } from './AnimationProvider'
+export { ANIMATION_PRESETS } from './presets'
+export { AnimationProvider, useAnimationContext } from './provider'
 
 // 导出类型定义
-export type { AnimationOptions } from './animationTypes'
+export type { AnimationOptions } from './types'

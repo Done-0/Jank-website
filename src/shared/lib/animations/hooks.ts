@@ -9,8 +9,8 @@ import {
   animateElement,
   batchProcessAnimations,
   cleanupResources
-} from './animationCore'
-import { AnimationOptions } from './animationTypes'
+} from './core'
+import { AnimationOptions } from './types'
 
 /**
  * React动画Hook

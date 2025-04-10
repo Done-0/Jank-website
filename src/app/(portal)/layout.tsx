@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import { Navbar } from '@shared/components/custom/Navbar'
 import { ReactNode } from 'react'
 

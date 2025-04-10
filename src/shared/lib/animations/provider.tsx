@@ -14,9 +14,9 @@ import React, {
   useState
 } from 'react'
 
-import { initAnimationSystem } from './animationCore'
-import { ANIMATION_PRESETS } from './animationPresets'
-import { AnimationOptions } from './animationTypes'
+import { initAnimationSystem } from './core'
+import { ANIMATION_PRESETS } from './presets'
+import { AnimationOptions } from './types'
 
 // 定义Provider接受的参数
 export interface AnimationProviderProps {

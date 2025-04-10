@@ -2,7 +2,7 @@
 
 import React, { forwardRef, HTMLAttributes, memo, ReactNode } from 'react'
 
-import { ANIMATION_PRESETS } from './animationPresets'
+import { ANIMATION_PRESETS } from './presets'
 
 interface AnimateProps extends HTMLAttributes<HTMLDivElement> {
   animation?: 'custom' | 'fade' | 'scale' | 'slide'
