@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { usePost } from '@/modules/post/hooks/usePost'
 import Loading from '@shared/components/custom/Loading'
@@ -15,7 +15,6 @@ import {
 } from '@shared/lib/utils'
 import { CopyCodeButton } from '@/modules/post/components/CopyCodeButton'
 import { TableOfContents } from '@/modules/post/components/TableOfPost'
-import { initAnimationSystem } from '@shared/lib/animations/core'
 import '@shared/lib/utils/highlight/syntax-highlight.css'
 import './post.css'
 
@@ -28,21 +27,7 @@ export default function PostDetailPage() {
   const highlighterRef = useRef<ReturnType<
     typeof createCodeHighlighter
   > | null>(null)
-  const animationCleanupRef = useRef<(() => void) | null>(null)
-
-  // 初始化动画和清理资源
-  useEffect(() => {
-    if (!animationCleanupRef.current) {
-      animationCleanupRef.current = initAnimationSystem()
-    }
-
-    return () => {
-      animationCleanupRef.current?.()
-      animationCleanupRef.current = null
-      highlighterRef.current?.cleanupButtons()
-      highlighterRef.current = null
-    }
-  }, [])
+  const [isVisible, setIsVisible] = useState(false)
 
   // 数据获取
   useEffect(() => {
@@ -59,10 +44,23 @@ export default function PostDetailPage() {
     highlighterRef.current = createCodeHighlighter(contentRef.current)
     setDocumentTheme(resolvedTheme || 'light')
     highlighterRef.current.applyFormatting(CopyCodeButton)
+
+    return () => {
+      highlighterRef.current?.cleanupButtons()
+      highlighterRef.current = null
+    }
   }, [currentPost, resolvedTheme])
 
-  if (isLoading || (!error && !currentPost))
-    return <Loading fullscreen allowScroll />
+  // 动画控制
+  useEffect(() => {
+    if (!currentPost) return
+
+    const timer = setTimeout(() => setIsVisible(true), 100)
+    return () => {
+      clearTimeout(timer)
+      setIsVisible(false)
+    }
+  }, [currentPost])
 
   if (error) {
     return (
@@ -75,19 +73,30 @@ export default function PostDetailPage() {
     )
   }
 
+  if (!currentPost) {
+    return <Loading fullscreen allowScroll />
+  }
+
   const isDark = resolvedTheme === 'dark'
-  const gradientBg = `linear-gradient(to bottom, rgba(${isDark ? '9,9,11' : '255,255,255'},0) 0%, rgba(${isDark ? '9,9,11' : '255,255,255'},0.5) 70%, rgba(${isDark ? '9,9,11' : '255,255,255'},1) 100%)`
-  const processedContent = currentPost!.content_html
-    ? formatHtmlContent(currentPost!.content_html)
+  const bgColor = isDark ? '9,9,11' : '255,255,255'
+  const gradientBg = `linear-gradient(to bottom, rgba(${bgColor},0) 0%, rgba(${bgColor},0.5) 70%, rgba(${bgColor},1) 100%)`
+  const processedContent = currentPost.content_html
+    ? formatHtmlContent(currentPost.content_html)
     : null
 
+  const animationStyle = {
+    opacity: isVisible ? 1 : 0,
+    transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+    transition: 'opacity 0.3s ease-out, transform 0.3s ease-out'
+  }
+
   return (
-    <div className='container mx-auto p-4'>
-      <div className='relative mb-6 scroll-animate'>
+    <div className='container mx-auto p-4' style={animationStyle}>
+      <div className='relative mb-6'>
         <div className='w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-t-lg relative'>
           <Image
-            src={currentPost!.image || '/images/default-cover.jpg'}
-            alt={currentPost!.title}
+            src={currentPost.image || '/images/default-cover.jpg'}
+            alt={currentPost.title}
             fill
             sizes='100vw'
             className='object-cover'
@@ -102,27 +111,27 @@ export default function PostDetailPage() {
           <h1
             className={`text-xl md:text-2xl lg:text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-800'} drop-shadow-sm`}
           >
-            {currentPost!.title}
+            {currentPost.title}
           </h1>
         </div>
       </div>
 
       <div className='grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px] gap-6'>
         <main>
-          <article className='rounded-lg shadow-sm overflow-hidden border scroll-animate'>
+          <article className='rounded-lg shadow-sm overflow-hidden border'>
             <div className='article-content hljs-content p-6' ref={contentRef}>
               {processedContent ? (
                 parse(processedContent)
               ) : (
                 <p className='text-muted-foreground text-center py-4'>
-                  此文章暂无内容
+                  哎呀，您的星球与我们失联啦！
                 </p>
               )}
             </div>
           </article>
         </main>
         <aside className='hidden lg:block'>
-          <div className='sticky top-20 scroll-animate'>
+          <div className='sticky top-20' style={animationStyle}>
             <TableOfContents
               contentRef={contentRef as React.RefObject<HTMLElement>}
               height='300px'
