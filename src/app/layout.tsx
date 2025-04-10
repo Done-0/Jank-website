@@ -1,11 +1,10 @@
 import { Suspense } from 'react'
-import { MainFooter } from '@shared/components/layout/Footer'
 import { cn } from '@shared/lib/utils'
-import { Providers } from '@shared/providers'
-import { GoogleAnalytics } from '@/shared/components/custom/Analytics'
 import '@shared/styles/globals.css'
 import { Inter } from 'next/font/google'
 import { metadata as seoMetadata } from '@shared/components/layout/Header'
+import ClientHead from '@/shared/components/layout/ClientHead'
+import ClientLayout from '@/shared/components/layout/ClientBody'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,20 +16,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <Suspense>
-      <html lang='zh-CN' suppressHydrationWarning>
-        <head>
-          <GoogleAnalytics />
-        </head>
-        <body className={cn('min-h-screen bg-background', inter.className)}>
-          <Providers>
-            <div className='flex min-h-screen flex-col md:px-[12.6%]'>
-              <main className='flex-1'>{children}</main>
-              <MainFooter />
-            </div>
-          </Providers>
-        </body>
-      </html>
-    </Suspense>
+    <html lang='zh-CN' suppressHydrationWarning>
+      <head>
+        <Suspense fallback={null}>
+          <ClientHead />
+        </Suspense>
+      </head>
+      <body className={cn('min-h-screen bg-background', inter.className)}>
+        <Suspense fallback={null}>
+          <ClientLayout>{children}</ClientLayout>
+        </Suspense>
+      </body>
+    </html>
   )
 }
