@@ -2,7 +2,6 @@
 
 import React, { memo } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { cn } from '@shared/lib/utils/classname'
 import { siteConfig } from '@shared/config/site.config'
 import { useResource } from '@shared/lib/utils/assets'
@@ -14,7 +13,7 @@ interface LogoProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-// Logo组件 - 使用外部SVG文件
+// Logo组件
 const Logo = memo(({ className, showText = true, size = 'md' }: LogoProps) => {
   // 根据尺寸确定logo大小
   const dimensions = {
@@ -34,13 +33,17 @@ const Logo = memo(({ className, showText = true, size = 'md' }: LogoProps) => {
       className={cn('flex items-center gap-2', className)}
       aria-label={`${siteConfig.name} 首页`}
     >
-      <Image
-        src='/images/jank.svg'
-        width={staticLogoDimensions.width}
-        height={staticLogoDimensions.height}
-        alt={`${siteConfig.name} logo`}
-        className='object-contain'
-        priority
+      <div
+        style={{
+          width: staticLogoDimensions.width,
+          height: staticLogoDimensions.height,
+          backgroundImage: 'url(/favicon.svg)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'center'
+        }}
+        role='img'
+        aria-label={`${siteConfig.name} logo`}
       />
 
       {showText && (

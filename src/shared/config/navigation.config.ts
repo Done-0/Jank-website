@@ -16,16 +16,16 @@ export const frontendNavigation = {
       title: '文章'
     },
     {
-      icon: 'about',
-      key: 'about',
-      link: '/about',
-      title: '关于'
-    },
-    {
       icon: 'sponsor',
       key: 'sponsor',
       link: '/sponsor',
       title: '赞助'
+    },
+    {
+      icon: 'friendlinks',
+      key: 'friendlinks',
+      link: '/friendlinks',
+      title: '友链'
     }
   ] as MenuItem[]
 }

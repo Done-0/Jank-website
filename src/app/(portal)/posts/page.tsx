@@ -22,6 +22,8 @@ export default function PostsPage() {
 
   useEffect(() => {
     setTitle('文章列表')
+
+    return () => setTitle('')
   }, [setTitle])
 
   const handleRefresh = useCallback(() => {

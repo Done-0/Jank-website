@@ -22,6 +22,7 @@ import {
 } from '@/shared/components/ui/shadcn/tabs'
 import { Badge } from '@/shared/components/ui/shadcn/badge'
 import { useEffect, useRef } from 'react'
+import { useSeo } from '@shared/providers/SeoProvider'
 
 interface Contributor {
   login: string
@@ -141,6 +142,7 @@ const UserCard = ({
 )
 
 export default function ContributorsPage() {
+  const { setTitle } = useSeo()
   const data = {
     jank: markSponsors(CONTRIBUTORS.jank),
     jankWebsite: markSponsors(CONTRIBUTORS.jankWebsite)
@@ -150,9 +152,13 @@ export default function ContributorsPage() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
+    setTitle('赞助者与贡献者')
+
     abortControllerRef.current = new AbortController()
 
     return () => {
+      setTitle('')
+
       abortControllerRef.current?.abort()
       abortControllerRef.current = null
       if (timeoutRef.current) {
@@ -160,10 +166,10 @@ export default function ContributorsPage() {
         timeoutRef.current = null
       }
     }
-  }, [])
+  }, [setTitle])
 
   return (
-    <div className='container max-w-3xl py-12 px-4 mx-auto'>
+    <div className='container max-w-3xl py-12 px-4 mx-auto scroll-animate'>
       <div className='space-y-8 text-center'>
         <header className='space-y-2'>
           <h1 className='text-3xl font-bold'>项目贡献者与赞助者</h1>

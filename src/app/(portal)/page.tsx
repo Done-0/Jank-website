@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import Image from 'next/image'
 import { memo, useCallback, useEffect, useRef } from 'react'
+import { useSeo } from '@shared/providers/SeoProvider'
 
 const STYLES = {
   button: {
@@ -177,6 +178,7 @@ const TechItem = memo(({ tech }: { tech: (typeof TECH_STACK)[0] }) => (
 TechItem.displayName = 'TechItem'
 
 export default function Home() {
+  const { setTitle } = useSeo()
   const openGitHub = useCallback(
     () => window.open('https://github.com/Done-0/Jank', '_blank'),
     []
@@ -187,9 +189,13 @@ export default function Home() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
+    setTitle('首页')
+
     abortControllerRef.current = new AbortController()
 
     return () => {
+      setTitle('')
+
       abortControllerRef.current?.abort()
       abortControllerRef.current = null
       if (timeoutRef.current) {
@@ -197,7 +203,7 @@ export default function Home() {
         timeoutRef.current = null
       }
     }
-  }, [])
+  }, [setTitle])
 
   return (
     <div className='min-h-screen bg-background'>

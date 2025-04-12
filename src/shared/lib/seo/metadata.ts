@@ -43,18 +43,6 @@ export function generateMetadata(params: SeoParams = {}): Metadata {
     description: optimizedDescription,
     keywords: keywords || seoConfig.meta.keywords,
     metadataBase: new URL(siteConfig.url),
-    icons: {
-      icon: seoConfig.assets.icons.favicon,
-      shortcut: seoConfig.assets.icons.shortcut,
-      apple: seoConfig.assets.icons.apple,
-      other: seoConfig.assets.icons.other
-        ? {
-            rel: seoConfig.assets.icons.other.rel,
-            url: seoConfig.assets.icons.other.url,
-            sizes: seoConfig.assets.icons.other.sizes
-          }
-        : undefined
-    },
     openGraph: {
       type,
       siteName: siteConfig.name,

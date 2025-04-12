@@ -45,6 +45,8 @@ export default function PostDetailPage() {
       setDisplayedPost(currentPost)
       setTitle(currentPost.title)
     }
+
+    return () => setTitle('')
   }, [postId, currentPost, handleGetPostDetail, setTitle])
 
   // 代码高亮和动画
@@ -98,7 +100,7 @@ export default function PostDetailPage() {
       <div className='relative mb-6'>
         <div className='w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-t-lg relative'>
           <Image
-            src={displayedPost.image || '/images/default-cover.jpg'}
+            src={displayedPost.image || '/images/jank-banner.png'}
             alt={displayedPost.title}
             fill
             sizes='100vw'

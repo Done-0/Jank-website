@@ -28,7 +28,9 @@ const baseConfig: NextConfig = {
   output: 'standalone',
   images: {
     unoptimized: false,
-    formats: ['image/avif', 'image/webp'],
+    formats: ['image/webp', 'image/avif'],
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       { protocol: 'https', hostname: '**' },
       { protocol: 'http', hostname: 'localhost' }
@@ -56,11 +58,42 @@ const prodExtend = isProd
       headers: async () => [
         ...securityHeaders,
         {
-          source: '/(.*)\\.(jpg|png|webp|svg|js|css|woff2)',
+          source: '/(.*)\\.(jpg|png|webp|js|css|woff2)',
           headers: [
             {
               key: 'Cache-Control',
               value: 'public, max-age=31536000, immutable'
+            }
+          ]
+        },
+        {
+          source: '/(.*)\\.(svg)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable'
+            },
+            {
+              key: 'Access-Control-Allow-Origin',
+              value: '*'
+            },
+            {
+              key: 'Timing-Allow-Origin',
+              value: '*'
+            },
+            {
+              key: 'Vary',
+              value: 'Accept'
+            }
+          ]
+        },
+        {
+          // 为SEO预览图提供特殊头信息
+          source: '/_next/image',
+          headers: [
+            {
+              key: 'Vary',
+              value: 'Accept'
             }
           ]
         }

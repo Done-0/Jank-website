@@ -171,18 +171,20 @@ Thanks to everyone who supports the open-source community. We sincerely thank ea
 </p>
 
 ### Detailed Statistics
-| Language | Files | Code Lines | Comment Lines | Blank Lines | Percentage |
-|:--------:|:-----:|:----------:|:-------------:|:-----------:|:----------:|
-| TypeScript | 129 | 9779 | 1126 | 1215 | 92.6% |
-| JavaScript | 3 | 76 | 65 | 21 | 0.7% |
-| CSS | 4 | 408 | 25 | 36 | 3.9% |
-| Config Files | 3 | 233 | 1 | 8 | 2.2% |
-| Markdown | 0 | 0 | 0 | 0 | 0.0% |
-| Others | 2 | 60 | 15 | 11 | 0.6% |
-| **Total** | **141** | **10556** | **1232** | **1291** | **100%** |
 
-*Note: Statistics are automatically updated by GitHub Actions, last updated on 2025-04-12*
-*Excluded node_modules, .next, public directories and package-lock.json, pnpm-lock.yaml, components.json, LICENSE, .gitignore, .dockerignore, README.md, README_en.md files*
+|   Language   |  Files  | Code Lines | Comment Lines | Blank Lines | Percentage |
+| :----------: | :-----: | :--------: | :-----------: | :---------: | :--------: |
+|  TypeScript  |   129   |    9779    |     1126      |    1215     |   92.6%    |
+|  JavaScript  |    3    |     76     |      65       |     21      |    0.7%    |
+|     CSS      |    4    |    408     |      25       |     36      |    3.9%    |
+| Config Files |    3    |    233     |       1       |      8      |    2.2%    |
+|   Markdown   |    0    |     0      |       0       |      0      |    0.0%    |
+|    Others    |    2    |     60     |      15       |     11      |    0.6%    |
+|  **Total**   | **141** | **10556**  |   **1232**    |  **1291**   |  **100%**  |
+
+_Note: Statistics are automatically updated by GitHub Actions, last updated on 2025-04-12_
+_Excluded node_modules, .next, public directories and package-lock.json, pnpm-lock.yaml, components.json, LICENSE, .gitignore, .dockerignore, README.md, README_en.md files_
+
 ## License
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).

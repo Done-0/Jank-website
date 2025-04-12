@@ -96,16 +96,6 @@ export const seoConfig: SEOConfig = {
     ],
     linkTags: [
       {
-        rel: 'icon',
-        href: '/favicon.ico',
-        type: 'image/x-icon'
-      },
-      {
-        rel: 'shortcut icon',
-        href: '/favicon.ico',
-        type: 'image/x-icon'
-      },
-      {
         rel: 'alternate',
         href: `${siteConfig.url}/rss.xml`,
         type: 'application/rss+xml'

@@ -30,13 +30,6 @@ export const metadata: Metadata = {
       follow: true
     }
   },
-  icons: {
-    icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', type: 'image/x-icon' }
-    ],
-    shortcut: '/favicon.ico'
-  },
   openGraph: {
     title: seoConfig.meta.title,
     description: seoConfig.meta.description,
@@ -44,7 +37,7 @@ export const metadata: Metadata = {
     siteName: seoConfig.social.og.siteName,
     images: [
       {
-        url: `${siteConfig.url}/images/home-black.png`,
+        url: `/images/banner.png`,
         width: 1280,
         height: 720,
         alt: 'Jank博客系统预览',
@@ -57,13 +50,16 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: seoConfig.meta.title,
     description: seoConfig.meta.description,
-    images: [`${siteConfig.url}/images/home-black.png`]
+    images: [`/images/banner.png`]
   },
   alternates: {
     canonical: siteConfig.url,
     types: {
       'application/rss+xml': `${siteConfig.url}/rss.xml`
     }
+  },
+  icons: {
+    icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }]
   }
 }
 
