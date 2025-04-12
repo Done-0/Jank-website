@@ -1,29 +1,24 @@
 import { SEOConfig } from '@shared/types/SEO'
 import { siteConfig } from '@shared/config/site.config'
 
-// Favicon SVG 的 Base64 编码，使用固定字符串而非运行时生成，确保服务器端和客户端一致
-const FAVICON_SVG_DATA_URL =
-  'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0icHJpbWFyeSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzM2RjFDRCIgLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzEzQzJDMiIgLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMxNjc3RkYiIC8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9InNlY29uZGFyeSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjRENEYiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjRjc1OUFCIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE2LCA3LjUpIj48cGF0aCBkPSJNMCwwIEw1NSwwIEM2MiwwIDY4LDYgNjgsMTMgTDY4LDU1IEM2OCw3MiA1NSw4NSAzOCw4NSBMMCw4NSBMMCw2OCBMMzMsNjggQzQwLDY4IDQ1LDYzIDQ1LDU2IEw0NSwyMiBMMCwyMiBaIiBmaWxsPSJ1cmwoI3ByaW1hcnkpIiAvPjxyZWN0IHg9IjE1IiB5PSIzMiIgd2lkdGg9IjM1IiBoZWlnaHQ9IjciIHJ4PSIzLjUiIGZpbGw9InVybCgjc2Vjb25kYXJ5KSIgLz48cmVjdCB4PSIxNSIgeT0iNDYiIHdpZHRoPSIyMiIgaGVpZ2h0PSI3IiByeD0iMy41IiBmaWxsPSJ1cmwoI3NlY29uZGFyeSkiIC8+PC9nPjwvc3ZnPg=='
-
 /**
  * SEO 优化配置
  */
 export const seoConfig: SEOConfig = {
   // 基础元数据
   meta: {
-    title: siteConfig.name,
-    titleTemplate: `%s | ${siteConfig.name}`,
-    description: siteConfig.description,
+    title: 'Jank - 高性能Go语言博客系统 | 扁平化设计风格轻量级体验',
+    titleTemplate: `%s | ${siteConfig.name} - Go 语言博客系统`,
+    description:
+      '基于 Go 语言开发的博客系统，致力于构建高性能、轻量级、高拓展和优雅体验的博客系统。',
     keywords: [
       'Jank',
+      'Jank 博客',
       'Jank 博客系统',
       'Go 语言博客',
       '轻量级博客平台',
       '高性能博客系统',
-      'Go 语言教程',
-      '在线 Go 课程',
-      '程序员社区',
-      'WordPress 替代方案'
+      'Go 语言'
     ],
     canonical: siteConfig.url,
     author: siteConfig.author.name,
@@ -37,10 +32,10 @@ export const seoConfig: SEOConfig = {
       type: 'website',
       images: [
         {
-          url: `${siteConfig.url}/og-image.svg`,
+          url: `${siteConfig.url}/images/home-black.png`,
           width: 1200,
           height: 630,
-          alt: siteConfig.name
+          alt: `${siteConfig.name} - 预览图`
         }
       ]
     }
@@ -51,8 +46,9 @@ export const seoConfig: SEOConfig = {
     organization: {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      logo: FAVICON_SVG_DATA_URL,
+      logo: `${siteConfig.url}/favicon.ico`,
       name: siteConfig.name,
+      description: '基于 Go 语言开发的高性能博客系统',
       sameAs: [siteConfig.author.url],
       url: siteConfig.url
     },
@@ -85,7 +81,7 @@ export const seoConfig: SEOConfig = {
   // 站点资源
   assets: {
     icons: {
-      favicon: FAVICON_SVG_DATA_URL
+      favicon: '/favicon.ico'
     }
   },
 
@@ -101,12 +97,18 @@ export const seoConfig: SEOConfig = {
     linkTags: [
       {
         rel: 'icon',
-        href: FAVICON_SVG_DATA_URL,
-        type: 'image/svg+xml'
+        href: '/favicon.ico',
+        type: 'image/x-icon'
       },
       {
-        rel: 'apple-touch-icon',
-        href: FAVICON_SVG_DATA_URL
+        rel: 'shortcut icon',
+        href: '/favicon.ico',
+        type: 'image/x-icon'
+      },
+      {
+        rel: 'alternate',
+        href: `${siteConfig.url}/rss.xml`,
+        type: 'application/rss+xml'
       }
     ]
   }

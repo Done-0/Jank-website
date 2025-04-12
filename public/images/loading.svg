@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="240" height="240" viewBox="0 0 100 95" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <!-- 蓝色渐变 -->
+        <linearGradient id="premiumBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#1e40af" />
+            <stop offset="50%" stop-color="#2563eb" />
+            <stop offset="100%" stop-color="#3b82f6" />
+        </linearGradient>
+
+        <linearGradient id="lightBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#bfdbfe" />
+            <stop offset="50%" stop-color="#dbeafe" />
+            <stop offset="100%" stop-color="#e0f2fe" />
+        </linearGradient>
+    </defs>
+
+    <!-- J 形状和动画 -->
+    <g transform="translate(16, 5)">
+        <path
+            d="M0,0 L50,0 C56,0 62,5 62,12 L62,50 C62,65 50,75 35,75 L0,75 L0,60 L30,60 C35,60 40,55 40,50 L40,20 L0,20 Z"
+            fill="url(#premiumBlue)" />
+
+        <!-- 带动画的矩形 -->
+        <rect x="12" y="30" width="0" height="6" rx="3" fill="url(#lightBlue)">
+            <animate
+                attributeName="width"
+                values="0;30;30;0"
+                keyTimes="0;0.2;0.4;1"
+                dur="0.8s"
+                repeatCount="indefinite" />
+        </rect>
+        <rect x="12" y="42" width="0" height="6" rx="3" fill="url(#lightBlue)">
+            <animate
+                attributeName="width"
+                values="0;20;20;0"
+                keyTimes="0;0.2;0.4;1"
+                dur="0.8s"
+                repeatCount="indefinite" />
+        </rect>
+    </g>
+</svg> 

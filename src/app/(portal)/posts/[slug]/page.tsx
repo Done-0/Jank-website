@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { usePost } from '@/modules/post/hooks/usePost'
 import Loading from '@shared/components/custom/Loading'
@@ -17,36 +17,37 @@ import { TableOfContents } from '@/modules/post/components/TableOfPost'
 import { AlertCard } from '@shared/components/custom/Error'
 import '@shared/lib/utils/highlight/syntax-highlight.css'
 import './post.css'
+import { useSeo } from '@shared/providers/SeoProvider'
 
 export default function PostDetailPage() {
   const params = useParams()
   const postId = parseInt(params?.slug as string, 10)
-  const { currentPost, isLoading, error, handleGetPostDetail } = usePost(false)
+  const { currentPost, error, handleGetPostDetail } = usePost(false)
   const { resolvedTheme } = useTheme()
   const contentRef = useRef<HTMLDivElement>(null)
   const highlighterRef = useRef<ReturnType<
     typeof createCodeHighlighter
   > | null>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const { setTitle } = useSeo()
   const [displayedPost, setDisplayedPost] = useState<typeof currentPost>(null)
-  const previousPostIdRef = useRef<number | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
 
-  // 数据获取
+  // 数据获取和UI更新
   useEffect(() => {
-    if (!isNaN(postId) && previousPostIdRef.current !== postId) {
-      previousPostIdRef.current = postId
+    if (isNaN(postId)) return
+
+    handleGetPostDetail(postId)
+
+    if (currentPost?.id !== postId) {
       setDisplayedPost(null)
       setIsVisible(false)
-
-      if (!isLoading) handleGetPostDetail(postId)
-    }
-
-    if (currentPost && postId === parseInt(currentPost.id.toString())) {
+    } else if (currentPost) {
       setDisplayedPost(currentPost)
+      setTitle(currentPost.title)
     }
-  }, [postId, currentPost, isLoading, handleGetPostDetail])
+  }, [postId, currentPost, handleGetPostDetail, setTitle])
 
-  // 代码高亮
+  // 代码高亮和动画
   useEffect(() => {
     if (!contentRef.current || !displayedPost?.content_html) return
 
@@ -65,24 +66,27 @@ export default function PostDetailPage() {
     }
   }, [displayedPost, resolvedTheme])
 
-  if (error) {
-    return <AlertCard type='error' message={error} />
-  }
+  const gradientBg = useMemo(
+    () => `linear-gradient(to bottom, 
+      hsla(var(--background)/0) 0%, 
+      hsla(var(--background)/0.4) 60%, 
+      hsla(var(--background)/0.7) 80%, 
+      hsla(var(--background)/0.9) 100%)`,
+    []
+  )
 
+  const processedContent = useMemo(
+    () =>
+      displayedPost?.content_html
+        ? formatHtmlContent(displayedPost.content_html)
+        : null,
+    [displayedPost?.content_html]
+  )
+
+  if (error) return <AlertCard type='error' message={error} />
   if (!displayedPost) return <Loading fullscreen allowScroll />
 
   const isDark = resolvedTheme === 'dark'
-
-  const gradientBg = `linear-gradient(to bottom, 
-    hsla(var(--background), 0) 0%, 
-    hsla(var(--background), 0.4) 60%, 
-    hsla(var(--background), 0.7) 80%, 
-    hsla(var(--background), 0.9) 100%)`
-
-  const processedContent = displayedPost.content_html
-    ? formatHtmlContent(displayedPost.content_html)
-    : null
-
   const animationStyle = {
     opacity: isVisible ? 1 : 0,
     transform: isVisible ? 'translateY(0)' : 'translateY(20px)',

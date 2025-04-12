@@ -15,7 +15,11 @@ export function GoogleAnalytics() {
   const trackedThresholds = useRef<Set<number>>(new Set())
 
   const handleScroll = useCallback(() => {
-    if (!analyticsConfig.defaultEvents.scrollDepth?.enabled) return
+    if (
+      typeof window === 'undefined' ||
+      !analyticsConfig.defaultEvents.scrollDepth?.enabled
+    )
+      return
 
     const scrollPercent = Math.round(
       ((window.scrollY + window.innerHeight) /
@@ -29,7 +33,7 @@ export function GoogleAnalytics() {
         !trackedThresholds.current.has(threshold)
       ) {
         trackedThresholds.current.add(threshold)
-        window.gtag('event', 'scroll_depth', {
+        window.gtag?.('event', 'scroll_depth', {
           value: threshold,
           percent_scrolled: scrollPercent
         })
@@ -38,9 +42,13 @@ export function GoogleAnalytics() {
   }, [])
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     // 初始化 Google Analytics
     window.dataLayer = window.dataLayer || []
-    window.gtag = (...args) => window.dataLayer.push(args)
+    window.gtag = function () {
+      window.dataLayer.push(arguments)
+    }
     window.gtag('js', new Date())
     window.gtag('config', analyticsConfig.measurementId, {
       debug_mode: analyticsConfig.debug

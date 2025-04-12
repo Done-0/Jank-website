@@ -1,10 +1,11 @@
 'use client'
 
+import { useEffect, useCallback } from 'react'
 import { usePostList } from '@/modules/post/hooks/usePostList'
 import { PostList } from '@/modules/post/components/PostList'
 import Loading from '@shared/components/custom/Loading'
-import { useEffect, useRef } from 'react'
 import { AlertCard } from '@shared/components/custom/Error'
+import { useSeo } from '@shared/providers/SeoProvider'
 
 export default function PostsPage() {
   const {
@@ -17,24 +18,15 @@ export default function PostsPage() {
     refreshPage
   } = usePostList(5)
 
-  const abortControllerRef = useRef<AbortController | null>(null)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const { setTitle } = useSeo()
 
   useEffect(() => {
-    abortControllerRef.current = new AbortController()
+    setTitle('文章列表')
+  }, [setTitle])
 
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort()
-        abortControllerRef.current = null
-      }
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        timeoutRef.current = null
-      }
-    }
-  }, [])
+  const handleRefresh = useCallback(() => {
+    refreshPage()
+  }, [refreshPage])
 
   if (isLoading) return <Loading fullscreen allowScroll />
 
@@ -43,7 +35,7 @@ export default function PostsPage() {
       <AlertCard
         type='error'
         message={error}
-        onAction={refreshPage}
+        onAction={handleRefresh}
         className='scroll-animate'
       />
     )

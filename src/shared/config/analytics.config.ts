@@ -6,7 +6,7 @@ import { AnalyticsConfig } from '@shared/types/Analytics'
  */
 export const analyticsConfig: AnalyticsConfig = {
   /** Google Analytics 4 测量 ID */
-  measurementId: 'G-XXXXXXXXXX',
+  measurementId: 'G-QP7GYEVKK1',
 
   /** 是否启用调试模式 */
   debug: process.env.NEXT_PUBLIC_ENV !== 'production',

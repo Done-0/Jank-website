@@ -7,6 +7,7 @@ import {
   ResourceProvider,
   ResourceMonitor
 } from '@shared/providers/ResourceProvider'
+import { SeoProvider } from '@shared/providers/SeoProvider'
 
 /**
  * 全局提供器组件 - 集中管理应用的上下文提供器
@@ -17,7 +18,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <ResourceMonitor>
         <ThemeProvider>
           <NavigationProvider>
-            <AnimationProvider>{children}</AnimationProvider>
+            <AnimationProvider>
+              <SeoProvider>{children}</SeoProvider>
+            </AnimationProvider>
           </NavigationProvider>
         </ThemeProvider>
       </ResourceMonitor>

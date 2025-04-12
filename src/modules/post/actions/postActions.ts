@@ -75,9 +75,8 @@ export const getPostListAction = cache(async (page: number, pageSize: number) =>
   postActions.getPostList(page, pageSize)
 )
 
-export const getPostDetailAction = cache(async (id?: number, title?: string) =>
+export const getPostDetailAction = async (id?: number, title?: string) =>
   postActions.getPostDetail(id, title)
-)
 
 export const createPostAction = async (data: CreatePostFormValues) =>
   postActions.createPost(data)

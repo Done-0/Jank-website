@@ -81,8 +81,21 @@ export interface SEOConfig {
     assets: {
         /** 图标配置 */
         icons: {
-            /** 网站图标 */
+            /** 主要网站图标 */
             favicon: string;
+            /** 快捷方式图标 */
+            shortcut?: string;
+            /** 苹果设备图标 */
+            apple?: string;
+            /** 其他图标 */
+            other?: {
+                /** 关系类型 */
+                rel: string;
+                /** URL地址 */
+                url: string;
+                /** 尺寸大小 */
+                sizes?: string;
+            };
         };
     };
 
@@ -106,6 +119,10 @@ export interface SEOConfig {
             href: string;
             /** 内容类型 */
             type?: string;
+            /** 尺寸大小 */
+            sizes?: string;
+            /** 颜色属性，用于某些特殊图标 */
+            color?: string;
         }>;
     };
 } 
