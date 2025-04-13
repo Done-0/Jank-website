@@ -1,5 +1,5 @@
 import { Post } from '@/modules/post/types/Post'
-import { postService } from '@/modules/post/services/postService'
+import { postService } from '@/modules/post/services/PostService'
 import { cache } from 'react'
 
 /**
