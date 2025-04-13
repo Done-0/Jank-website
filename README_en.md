@@ -181,7 +181,7 @@ Thanks to everyone who supports the open-source community. We sincerely thank ea
 | Others | 2 | 60 | 15 | 11 | 0.6% |
 | **Total** | **142** | **10733** | **1237** | **1321** | **100%** |
 
-*Note: Statistics are automatically updated by GitHub Actions, last updated on 2025-04-12*
+*Note: Statistics are automatically updated by GitHub Actions, last updated on 2025-04-13*
 *Excluded node_modules, .next, public directories and package-lock.json, pnpm-lock.yaml, components.json, LICENSE, .gitignore, .dockerignore, README.md, README_en.md files*
 ## License
 
