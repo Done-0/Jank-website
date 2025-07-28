@@ -182,7 +182,7 @@ src/
 | 其他 | 2 | 25 | 11 | 9 | 0.5% |
 | **总计** | **64** | **5318** | **176** | **539** | **100%** |
 
-*注：统计数据由 GitHub Actions 自动更新，最后更新于 2025-07-27*
+*注：统计数据由 GitHub Actions 自动更新，最后更新于 2025-07-28*
 *排除了 node_modules、.next、public 目录和 package-lock.json、pnpm-lock.yaml、components.json、LICENSE、.gitignore、.dockerignore、README.md、README_en.md 文件*
 ## 许可证
 
